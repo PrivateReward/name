@@ -4,189 +4,210 @@
 <meta charset="UTF-8">
 <title>Fake WiFi Hacker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-body{margin:0;font-family:monospace;background:#000;color:#0f0}
-.hidden{display:none}
-.center{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column}
-input,select,button{
-  background:#000;border:1px solid #0f0;color:#0f0;
-  padding:10px;margin:5px;width:250px
-}
-button{cursor:pointer}
-.err{border-color:red;color:red}
-.sidebar{
-  position:fixed;left:0;top:0;width:200px;height:100%;
-  background:#050;display:none;padding:10px
-}
-.sidebar div{margin:10px 0;cursor:pointer}
-.anim{animation:blink 1s infinite}
-@keyframes blink{50%{opacity:.2}}
-.progress{width:300px;border:1px solid #0f0}
-.bar{height:20px;width:0;background:#0f0}
 
-/* ✅ ADD LANG – WALAY GI-BAWAS */
-#loading{
-  position: fixed;
-  inset: 0;
-  z-index: 10;
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#000;
+  color:#0f0;
+  font-family:monospace;
 }
-#gate{
-  position: fixed;
-  inset: 0;
-  z-index: 20;
+
+.screen{
+  position:fixed;
+  inset:0;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
 }
+
+.show{display:flex}
+
+input,select,button{
+  width:260px;
+  margin:6px;
+  padding:10px;
+  background:#000;
+  color:#0f0;
+  border:1px solid #0f0;
+}
+
+button{cursor:pointer}
+
+.err{border-color:red;color:red}
+
+.progress{
+  width:260px;
+  border:1px solid #0f0;
+}
+.bar{
+  height:18px;
+  width:0%;
+  background:#0f0;
+}
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  width:180px;
+  height:100%;
+  background:#040;
+  padding:10px;
+}
+
+.sidebar div{
+  margin:12px 0;
+  cursor:pointer;
+}
+
+.content{
+  margin-left:180px;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+}
+
+.anim{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
 </style>
 </head>
 
 <body>
 
 <!-- LOADING -->
-<div id="loading" class="center">
-  <h2>Initializing System</h2>
+<div id="loading" class="screen show">
+  <h3>Initializing System</h3>
   <div class="progress"><div id="bar" class="bar"></div></div>
   <p id="lp">Loading 0%</p>
 </div>
 
-<!-- FEEDBACK / COMMENT -->
-<div id="gate" class="center hidden">
+<!-- GATE -->
+<div id="gate" class="screen">
   <h3>ACCESS REQUIRED</h3>
-  <button onclick="showForm('fb')">FEEDBACK</button>
-  <button onclick="showForm('cm')">COMMENT</button>
 
-  <div id="fb" class="hidden">
+  <button onclick="openForm('fb')">FEEDBACK</button>
+  <button onclick="openForm('cm')">COMMENT</button>
+
+  <div id="fb" style="display:none">
     <input id="fb1" placeholder="Feedback 1">
     <input id="fb2" placeholder="Feedback 2">
     <button onclick="submitData('FEEDBACK')">SUBMIT</button>
   </div>
 
-  <div id="cm" class="hidden">
+  <div id="cm" style="display:none">
     <input id="cm1" placeholder="Comment 1">
     <input id="cm2" placeholder="Comment 2">
     <button onclick="submitData('COMMENT')">SUBMIT</button>
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<div id="sidebar" class="sidebar">
-  <div onclick="showMain()">MAIN</div>
-  <div onclick="showHack()">HACK WIFI</div>
-  <div onclick="showSettings()">SETTINGS</div>
-</div>
+<!-- APP -->
+<div id="app" class="screen">
 
-<!-- MAIN -->
-<div id="main" class="center hidden">
-  <h2 class="anim">SYSTEM READY</h2>
-</div>
+  <div class="sidebar">
+    <div onclick="showPage('main')">MAIN</div>
+    <div onclick="showPage('hack')">HACK WIFI</div>
+    <div onclick="showPage('settings')">SETTINGS</div>
+  </div>
 
-<!-- HACK WIFI -->
-<div id="hack" class="center hidden">
-  <input id="wifi" placeholder="ENTER WIFI NAME">
-  <select id="usage">
-    <option value="">Network usage</option>
-    <option>Detect Automatically</option>
-    <option>Treat as Metered</option>
-    <option>Treat as Unmetered</option>
-  </select>
-  <select id="auto">
-    <option value="">Auto Connect</option>
-    <option>ON</option>
-    <option>OFF</option>
-  </select>
-  <button onclick="bypass()">BYPASS</button>
-  <p id="hacklog"></p>
-</div>
+  <div class="content" id="main">
+    <h2 class="anim">SYSTEM READY</h2>
+  </div>
 
-<!-- SETTINGS -->
-<div id="settings" class="center hidden">
-  <label>FPS</label>
-  <input type="range" min="30" max="144">
-  <label>Graphics</label>
-  <select>
-    <option>LOW</option>
-    <option>MEDIUM</option>
-    <option>HIGH</option>
-    <option>ULTRA</option>
-  </select>
+  <div class="content" id="hack" style="display:none">
+    <input id="wifi" placeholder="ENTER WIFI NAME">
+    <select id="usage">
+      <option value="">Network usage</option>
+      <option>Detect Automatically</option>
+      <option>Treat as Metered</option>
+      <option>Treat as Unmetered</option>
+    </select>
+    <select id="auto">
+      <option value="">Auto Connect</option>
+      <option>ON</option>
+      <option>OFF</option>
+    </select>
+    <button onclick="bypass()">BYPASS</button>
+    <p id="log"></p>
+  </div>
+
+  <div class="content" id="settings" style="display:none">
+    <label>FPS</label>
+    <input type="range" min="30" max="144">
+    <label>Graphics</label>
+    <select>
+      <option>LOW</option>
+      <option>MEDIUM</option>
+      <option>HIGH</option>
+      <option>ULTRA</option>
+    </select>
+  </div>
+
 </div>
 
 <script>
-const loading = document.getElementById("loading");
-const gate = document.getElementById("gate");
-const fb = document.getElementById("fb");
-const cm = document.getElementById("cm");
-const fb1 = document.getElementById("fb1");
-const fb2 = document.getElementById("fb2");
-const cm1 = document.getElementById("cm1");
-const cm2 = document.getElementById("cm2");
-
-const sidebar = document.getElementById("sidebar");
-const main = document.getElementById("main");
-const hack = document.getElementById("hack");
-const settings = document.getElementById("settings");
-
-const wifi = document.getElementById("wifi");
-const usage = document.getElementById("usage");
-const auto = document.getElementById("auto");
-const hacklog = document.getElementById("hacklog");
-
-const bar = document.getElementById("bar");
-const lp = document.getElementById("lp");
-
 const WEBAPP = "https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
 
-let p = 0;
-let load = setInterval(() => {
+/* LOADING */
+let p=0;
+const bar=document.getElementById("bar");
+const lp=document.getElementById("lp");
+
+const load=setInterval(()=>{
   p++;
-  bar.style.width = p + "%";
-  lp.innerText = "Loading " + p + "%";
-
-  if (p >= 100) {
+  bar.style.width=p+"%";
+  lp.innerText="Loading "+p+"%";
+  if(p>=100){
     clearInterval(load);
-
-    loading.classList.add("hidden");
-    loading.style.display = "none";   // ✅ ADD
-
-    gate.classList.remove("hidden");
-    gate.style.display = "flex";      // ✅ ADD
+    showScreen("gate");
   }
-}, 30);
+},25);
 
-function showForm(x){
-  fb.classList.add("hidden"); 
-  cm.classList.add("hidden");
-  document.getElementById(x).classList.remove("hidden");
+/* SCREEN CONTROL */
+function showScreen(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("show"));
+  document.getElementById(id).classList.add("show");
+}
+
+/* GATE */
+function openForm(x){
+  document.getElementById("fb").style.display="none";
+  document.getElementById("cm").style.display="none";
+  document.getElementById(x).style.display="block";
 }
 
 function submitData(type){
-  let f1 = type=="FEEDBACK"?fb1.value:cm1.value;
-  let f2 = type=="FEEDBACK"?fb2.value:cm2.value;
-  if(!f1 || !f2){navigator.vibrate(300);return;}
+  const a=type==="FEEDBACK"?fb1.value:cm1.value;
+  const b=type==="FEEDBACK"?fb2.value:cm2.value;
+  if(!a||!b){navigator.vibrate(300);return;}
 
   fetch(WEBAPP,{
     method:"POST",
-    body:JSON.stringify({
-      type:type,
-      field1:f1,
-      field2:f2,
-      ua:navigator.userAgent
-    })
+    body:JSON.stringify({type,field1:a,field2:b})
   }).then(()=>{
-    gate.classList.add("hidden");
-    sidebar.style.display="block";
-    showMain();
+    showScreen("app");
   });
 }
 
-function hideAll(){
-  main.classList.add("hidden");
-  hack.classList.add("hidden");
-  settings.classList.add("hidden");
+/* APP NAV */
+function showPage(id){
+  ["main","hack","settings"].forEach(p=>{
+    document.getElementById(p).style.display="none";
+  });
+  document.getElementById(id).style.display="flex";
 }
-function showMain(){hideAll();main.classList.remove("hidden")}
-function showHack(){hideAll();hack.classList.remove("hidden")}
-function showSettings(){hideAll();settings.classList.remove("hidden")}
 
+/* FAKE BYPASS */
 function bypass(){
+  const wifi=document.getElementById("wifi");
+  const usage=document.getElementById("usage");
+  const auto=document.getElementById("auto");
   let ok=true;
   [wifi,usage,auto].forEach(i=>{
     if(!i.value){i.classList.add("err");ok=false}
@@ -194,12 +215,12 @@ function bypass(){
   });
   if(!ok){navigator.vibrate(400);return;}
 
-  hacklog.innerHTML="<span class='anim'>SEARCHING...</span>";
+  log.innerHTML="<span class='anim'>SEARCHING...</span>";
   setTimeout(()=>{
-    hacklog.innerHTML="WIFI DETECTED<br>PRIVATE / PUBLIC";
+    log.innerHTML="WIFI DETECTED<br>PRIVATE / PUBLIC";
     setTimeout(()=>{
-      hacklog.innerHTML="SUCCESSFULLY<br>PASSWORD = "+
-      Math.random().toString(36).slice(-10).toUpperCase();
+      log.innerHTML="SUCCESS<br>PASSWORD = "+
+        Math.random().toString(36).slice(-10).toUpperCase();
     },15000);
   },25000);
 }
