@@ -2,89 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FAKE WIFI BYPASS</title>
+<title>Fake WiFi Hacker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-*{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto}
-body{
-  margin:0;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
-}
+body{margin:0;font-family:monospace;background:#000;color:#0f0}
 .hidden{display:none}
-.center{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-  flex-direction:column;
+.center{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column}
+input,select,button{
+  background:#000;border:1px solid #0f0;color:#0f0;
+  padding:10px;margin:5px;width:250px
 }
-.card{
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(15px);
-  padding:25px;
-  border-radius:16px;
-  width:90%;
-  max-width:380px;
-  box-shadow:0 20px 40px rgba(0,0,0,.4);
-}
-h1{text-align:center}
-input,select{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:none;
-}
-button{
-  width:100%;
-  padding:14px;
-  margin-top:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  background:#00ffcc;
-}
-button.alt{background:#00aaff}
-#barBox{
-  width:260px;height:8px;
-  background:rgba(255,255,255,.2);
-  border-radius:10px;
-  overflow:hidden;
-}
-#bar{
-  height:100%;
-  width:0%;
-  background:#00ffcc;
-}
-.fade{animation:fade .5s ease}
-@keyframes fade{
-  from{opacity:0;transform:scale(.95)}
-  to{opacity:1;transform:scale(1)}
-}
+button{cursor:pointer}
+.err{border-color:red;color:red}
 .sidebar{
-  position:fixed;
-  left:0;top:0;
-  width:70px;height:100vh;
-  background:rgba(0,0,0,.4);
-  display:flex;
-  flex-direction:column;
+  position:fixed;left:0;top:0;width:200px;height:100%;
+  background:#050;display:none;padding:10px
 }
-.sidebar button{
-  border-radius:0;
-  margin:0;
-}
-.status{
-  color:lime;
-  margin-top:20px;
-  animation:blink 1s infinite;
-}
-@keyframes blink{
-  50%{opacity:.4}
-}
-small{opacity:.5}
+.sidebar div{margin:10px 0;cursor:pointer}
+.anim{animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.2}}
+.progress{width:300px;border:1px solid #0f0}
+.bar{height:20px;width:0;background:#0f0}
 </style>
 </head>
 
@@ -92,159 +30,140 @@ small{opacity:.5}
 
 <!-- LOADING -->
 <div id="loading" class="center">
-  <h1 id="loadTxt">Loading 1%</h1>
-  <div id="barBox"><div id="bar"></div></div>
+  <h2>Initializing System</h2>
+  <div class="progress"><div id="bar" class="bar"></div></div>
+  <p id="lp">Loading 0%</p>
 </div>
 
-<!-- CHOICE -->
-<div id="choice" class="center hidden fade">
-  <div class="card">
-    <h1>CHOICE</h1>
-    <button onclick="openFeedback()">FEEDBACK</button>
-    <button class="alt" onclick="openComment()">COMMENT</button>
-  </div>
-</div>
+<!-- FEEDBACK / COMMENT -->
+<div id="gate" class="center hidden">
+  <h3>ACCESS REQUIRED</h3>
+  <button onclick="showForm('fb')">FEEDBACK</button>
+  <button onclick="showForm('cm')">COMMENT</button>
 
-<!-- FEEDBACK -->
-<div id="feedback" class="center hidden fade">
-  <div class="card">
-    <h1>FEEDBACK</h1>
+  <div id="fb" class="hidden">
     <input id="fb1" placeholder="Feedback 1">
     <input id="fb2" placeholder="Feedback 2">
-    <button onclick="submitFeedback()">SUBMIT</button>
+    <button onclick="submitData('FEEDBACK')">SUBMIT</button>
+  </div>
+
+  <div id="cm" class="hidden">
+    <input id="cm1" placeholder="Comment 1">
+    <input id="cm2" placeholder="Comment 2">
+    <button onclick="submitData('COMMENT')">SUBMIT</button>
   </div>
 </div>
 
-<!-- COMMENT -->
-<div id="comment" class="center hidden fade">
-  <div class="card">
-    <h1>COMMENT</h1>
-    <input id="c1" placeholder="Comment 1">
-    <input id="c2" placeholder="Comment 2">
-    <button onclick="submitComment()">SUBMIT</button>
-  </div>
+<!-- SIDEBAR -->
+<div id="sidebar" class="sidebar">
+  <div onclick="showMain()">MAIN</div>
+  <div onclick="showHack()">HACK WIFI</div>
+  <div onclick="showSettings()">SETTINGS</div>
 </div>
 
 <!-- MAIN -->
-<div id="main" class="hidden fade">
-  <div class="sidebar">
-    <button onclick="showMain()">MAIN</button>
-    <button onclick="showHack()">HACK</button>
-    <button onclick="showSettings()">SET</button>
-  </div>
+<div id="main" class="center hidden">
+  <h2 class="anim">SYSTEM READY</h2>
+</div>
 
-  <div id="mainPage" class="center">
-    <h1></h1>
-  </div>
+<!-- HACK WIFI -->
+<div id="hack" class="center hidden">
+  <input id="wifi" placeholder="ENTER WIFI NAME">
+  <select id="usage">
+    <option value="">Network usage</option>
+    <option>Detect Automatically</option>
+    <option>Treat as Metered</option>
+    <option>Treat as Unmetered</option>
+  </select>
+  <select id="auto">
+    <option value="">Auto Connect</option>
+    <option>ON</option>
+    <option>OFF</option>
+  </select>
+  <button onclick="bypass()">BYPASS</button>
+  <p id="hacklog"></p>
+</div>
 
-  <!-- HACK WIFI -->
-  <div id="hackPage" class="center hidden">
-    <div class="card">
-      <h1>HACK WIFI</h1>
-      <input id="wifi" placeholder="WIFI NAME">
-      <select id="net">
-        <option value="">Network Usage</option>
-        <option>Detect Automatically</option>
-        <option>Metered</option>
-        <option>Unmetered</option>
-      </select>
-      <select id="auto">
-        <option value="">Auto Connect</option>
-        <option>ON</option>
-        <option>OFF</option>
-      </select>
-      <button onclick="runBypass()">BYPASS</button>
-      <div id="status" class="status hidden"></div>
-    </div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div id="settingsPage" class="center hidden">
-    <div class="card">
-      <h1>SETTINGS</h1>
-      <select><option>FPS 30</option><option>FPS 60</option><option>FPS 120</option></select>
-      <select>
-        <option>Graphics Low</option>
-        <option>Graphics Medium</option>
-        <option>Graphics High</option>
-        <option>Graphics Ultra</option>
-      </select>
-    </div>
-  </div>
+<!-- SETTINGS -->
+<div id="settings" class="center hidden">
+  <label>FPS</label>
+  <input type="range" min="30" max="144">
+  <label>Graphics</label>
+  <select>
+    <option>LOW</option>
+    <option>MEDIUM</option>
+    <option>HIGH</option>
+    <option>ULTRA</option>
+  </select>
 </div>
 
 <script>
-// ================= LOADING =================
-let p=1;
-let bar=document.getElementById("bar");
-let txt=document.getElementById("loadTxt");
+const WEBAPP = "https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
+
+let p=0;
+const bar=document.getElementById("bar");
+const lp=document.getElementById("lp");
+
 let load=setInterval(()=>{
-  p++;
-  txt.innerText="Loading "+p+"%";
-  bar.style.width=p+"%";
-  if(p>=100){
-    clearInterval(load);
-    setTimeout(()=>{
-      loading.classList.add("hidden");
-      choice.classList.remove("hidden");
-    },500);
+  p++; bar.style.width=p+"%"; lp.innerText="Loading "+p+"%";
+  if(p>=100){clearInterval(load);
+    loading.classList.add("hidden");
+    gate.classList.remove("hidden");
   }
-},130);
+},30);
 
-// ================= NAV =================
-function openFeedback(){choice.classList.add("hidden");feedback.classList.remove("hidden")}
-function openComment(){choice.classList.add("hidden");comment.classList.remove("hidden")}
-function showMain(){hideAll();mainPage.classList.remove("hidden")}
-function showHack(){hideAll();hackPage.classList.remove("hidden")}
-function showSettings(){hideAll();settingsPage.classList.remove("hidden")}
+function showForm(x){
+  fb.classList.add("hidden"); cm.classList.add("hidden");
+  document.getElementById(x).classList.remove("hidden");
+}
+
+function submitData(type){
+  let f1 = type=="FEEDBACK"?fb1.value:cm1.value;
+  let f2 = type=="FEEDBACK"?fb2.value:cm2.value;
+
+  if(!f1 || !f2){navigator.vibrate(300);return;}
+
+  fetch(WEBAPP,{
+    method:"POST",
+    body:JSON.stringify({
+      type:type,
+      field1:f1,
+      field2:f2,
+      ua:navigator.userAgent
+    })
+  }).then(()=>{
+    gate.classList.add("hidden");
+    sidebar.style.display="block";
+    showMain();
+  });
+}
+
 function hideAll(){
-  mainPage.classList.add("hidden");
-  hackPage.classList.add("hidden");
-  settingsPage.classList.add("hidden");
+  main.classList.add("hidden");
+  hack.classList.add("hidden");
+  settings.classList.add("hidden");
 }
+function showMain(){hideAll();main.classList.remove("hidden")}
+function showHack(){hideAll();hack.classList.remove("hidden")}
+function showSettings(){hideAll();settings.classList.remove("hidden")}
 
-// ================= GOOGLE SCRIPT =================
-const WEB_APP_URL="https://script.google.com/macros/s/AKfycbxyLGi_DQbQNMSMISRcXUKSmuikrZ8Dhm1O3f47EJAPHKpJ65LL0CLfmC6LsGgfMyZe/exec";
+function bypass(){
+  let ok=true;
+  [wifi,usage,auto].forEach(i=>{
+    if(!i.value){i.classList.add("err");ok=false}
+    else i.classList.remove("err");
+  });
+  if(!ok){navigator.vibrate(400);return;}
 
-function submitFeedback(){
-  if(!fb1.value||!fb2.value){alert("Required");vib();return}
-  fetch(WEB_APP_URL,{method:"POST",body:JSON.stringify({type:"FEEDBACK",a:fb1.value,b:fb2.value})})
-  .then(()=>enterMain());
-}
-function submitComment(){
-  if(!c1.value||!c2.value){alert("Required");vib();return}
-  fetch(WEB_APP_URL,{method:"POST",body:JSON.stringify({type:"COMMENT",a:c1.value,b:c2.value})})
-  .then(()=>enterMain());
-}
-function enterMain(){
-  feedback.classList.add("hidden");
-  comment.classList.add("hidden");
-  main.classList.remove("hidden");
-}
-
-// ================= FAKE BYPASS =================
-function vib(){navigator.vibrate&&navigator.vibrate([200,100,200])}
-
-function runBypass(){
-  if(!wifi.value||!net.value||!auto.value){
-    vib();alert("Complete all fields");return;
-  }
-  status.classList.remove("hidden");
-  status.innerText="SEARCHING...";
+  hacklog.innerHTML="<span class='anim'>SEARCHING...</span>";
   setTimeout(()=>{
-    status.innerText="WIFI DETECTED\nSCANNING...";
+    hacklog.innerHTML="WIFI DETECTED<br>PRIVATE / PUBLIC";
     setTimeout(()=>{
-      status.innerText="SUCCESS\nPASSWORD: "+genPass();
+      hacklog.innerHTML="SUCCESSFULLY<br>PASSWORD = "+
+      Math.random().toString(36).slice(-10).toUpperCase();
     },15000);
   },25000);
 }
-
-function genPass(){
-  let n=Math.floor(10000000+Math.random()*90000000);
-  let c="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return n+c[Math.floor(Math.random()*26)]+c[Math.floor(Math.random()*26)];
-}
 </script>
-
 </body>
-</html>
+  </html>
