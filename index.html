@@ -2,254 +2,247 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fake WiFi Hacker</title>
+<title>FAKE WIFI BYPASS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ================= BASIC THEME ================= */
-*{box-sizing:border-box}
+*{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto}
 body{
   margin:0;
-  font-family:monospace;
-  background:#000;
-  color:#0f0;
-  overflow:hidden;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
 }
 .hidden{display:none}
 .center{
-  position:fixed;
-  inset:0;
   display:flex;
   align-items:center;
   justify-content:center;
+  height:100vh;
   flex-direction:column;
 }
-
-/* ================= LOADING ================= */
-#loadingCircle{
-  width:120px;height:120px;
-  border:6px solid #033;
-  border-top:6px solid #0f0;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ================= BUTTONS & INPUTS ================= */
-input,select,button{
-  background:#000;
-  color:#0f0;
-  border:1px solid #0f0;
-  padding:10px;
-  margin:6px;
-  width:260px;
-}
-button{cursor:pointer}
-.err{border-color:red;color:red}
-
-/* ================= FLOATING NAV ================= */
-#nav{
-  position:fixed;
-  left:15px;
-  top:50%;
-  transform:translateY(-50%);
-  display:none;
-  flex-direction:column;
-  gap:20px;
-}
-.nav-item{
-  cursor:pointer;
-  color:#0f0;
-  opacity:.6;
-}
-.nav-item.active{
-  color:silver;
-  opacity:1;
-}
-
-/* ================= TERMINAL ================= */
-#terminal{
+.card{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:16px;
   width:90%;
-  max-width:700px;
-  height:300px;
-  border:1px solid #0f0;
-  padding:10px;
-  overflow:hidden;
-  font-size:14px;
+  max-width:380px;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
 }
-.blink{animation:blink 1s infinite}
-@keyframes blink{50%{opacity:.2}}
+h1{text-align:center}
+input,select{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  background:#00ffcc;
+}
+button.alt{background:#00aaff}
+#barBox{
+  width:260px;height:8px;
+  background:rgba(255,255,255,.2);
+  border-radius:10px;
+  overflow:hidden;
+}
+#bar{
+  height:100%;
+  width:0%;
+  background:#00ffcc;
+}
+.fade{animation:fade .5s ease}
+@keyframes fade{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+.sidebar{
+  position:fixed;
+  left:0;top:0;
+  width:70px;height:100vh;
+  background:rgba(0,0,0,.4);
+  display:flex;
+  flex-direction:column;
+}
+.sidebar button{
+  border-radius:0;
+  margin:0;
+}
+.status{
+  color:lime;
+  margin-top:20px;
+  animation:blink 1s infinite;
+}
+@keyframes blink{
+  50%{opacity:.4}
+}
+small{opacity:.5}
 </style>
 </head>
 
 <body>
 
-<!-- ================= LOADING ================= -->
+<!-- LOADING -->
 <div id="loading" class="center">
-  <div id="loadingCircle"></div>
-  <p>Loading system...</p>
+  <h1 id="loadTxt">Loading 1%</h1>
+  <div id="barBox"><div id="bar"></div></div>
 </div>
 
-<!-- ================= ACCESS ================= -->
-<div id="access" class="center hidden">
-  <h2>ACCESS REQUIRED</h2>
-  <button onclick="chooseAccess('comment')">COMMENT</button>
-  <button onclick="chooseAccess('feedback')">FEEDBACK</button>
-</div>
-
-<!-- ================= COMMENT ================= -->
-<div id="commentPage" class="center hidden">
-  <h3>COMMENT</h3>
-  <input id="c1" placeholder="Comment 1">
-  <input id="c2" placeholder="Comment 2">
-  <button onclick="submitAccess()">SUBMIT</button>
-</div>
-
-<!-- ================= FEEDBACK ================= -->
-<div id="feedbackPage" class="center hidden">
-  <h3>FEEDBACK</h3>
-  <input id="f1" placeholder="Feedback 1">
-  <input id="f2" placeholder="Feedback 2">
-  <button onclick="submitAccess()">SUBMIT</button>
-</div>
-
-<!-- ================= FLOATING NAV ================= -->
-<div id="nav">
-  <div class="nav-item active" onclick="showPage('main')">Main</div>
-  <div class="nav-item" onclick="showPage('hack')">Hack Wifi</div>
-  <div class="nav-item" onclick="showPage('settings')">Settings</div>
-</div>
-
-<!-- ================= MAIN ================= -->
-<div id="main" class="center hidden">
-  <h1 class="blink">SYSTEM IS READY</h1>
-</div>
-
-<!-- ================= HACK WIFI ================= -->
-<div id="hack" class="center hidden">
-  <input id="wifi" placeholder="ENTER WIFI NAME">
-  <select id="usage">
-    <option value="">Network usage</option>
-    <option>Detect Automatically</option>
-    <option>Treat as Metered</option>
-    <option>Treat as Unmetered</option>
-  </select>
-  <select id="auto">
-    <option value="">Auto Connect</option>
-    <option>ON</option>
-    <option>OFF</option>
-  </select>
-  <button onclick="startBypass()">BYPASS</button>
-
-  <div id="terminal" class="hidden"></div>
-
-  <div id="wifiType" class="hidden">
-    <p>WIFI DETECTED</p>
-    <button onclick="selectWifi()">PRIVATE</button>
-    <button onclick="selectWifi()">PUBLIC</button>
+<!-- CHOICE -->
+<div id="choice" class="center hidden fade">
+  <div class="card">
+    <h1>CHOICE</h1>
+    <button onclick="openFeedback()">FEEDBACK</button>
+    <button class="alt" onclick="openComment()">COMMENT</button>
   </div>
 </div>
 
-<!-- ================= SETTINGS ================= -->
-<div id="settings" class="center hidden">
-  <label>FPS</label>
-  <select>
-    <option>30</option><option>60</option><option>90</option>
-    <option>120</option><option>240</option>
-  </select>
+<!-- FEEDBACK -->
+<div id="feedback" class="center hidden fade">
+  <div class="card">
+    <h1>FEEDBACK</h1>
+    <input id="fb1" placeholder="Feedback 1">
+    <input id="fb2" placeholder="Feedback 2">
+    <button onclick="submitFeedback()">SUBMIT</button>
+  </div>
+</div>
 
-  <label>Graphics</label>
-  <select>
-    <option>Low</option><option>Medium</option><option>High</option>
-    <option>Ultra</option><option>Ultra HD</option><option>ULTRA HD 4K</option>
-  </select>
+<!-- COMMENT -->
+<div id="comment" class="center hidden fade">
+  <div class="card">
+    <h1>COMMENT</h1>
+    <input id="c1" placeholder="Comment 1">
+    <input id="c2" placeholder="Comment 2">
+    <button onclick="submitComment()">SUBMIT</button>
+  </div>
+</div>
 
-  <label>Smooth</label>
-  <select><option>ON</option><option>OFF</option></select>
+<!-- MAIN -->
+<div id="main" class="hidden fade">
+  <div class="sidebar">
+    <button onclick="showMain()">MAIN</button>
+    <button onclick="showHack()">HACK</button>
+    <button onclick="showSettings()">SET</button>
+  </div>
 
-  <label>Effects</label>
-  <select>
-    <option>Low</option><option>Medium</option>
-    <option>High</option><option>Super High</option>
-  </select>
+  <div id="mainPage" class="center">
+    <h1></h1>
+  </div>
+
+  <!-- HACK WIFI -->
+  <div id="hackPage" class="center hidden">
+    <div class="card">
+      <h1>HACK WIFI</h1>
+      <input id="wifi" placeholder="WIFI NAME">
+      <select id="net">
+        <option value="">Network Usage</option>
+        <option>Detect Automatically</option>
+        <option>Metered</option>
+        <option>Unmetered</option>
+      </select>
+      <select id="auto">
+        <option value="">Auto Connect</option>
+        <option>ON</option>
+        <option>OFF</option>
+      </select>
+      <button onclick="runBypass()">BYPASS</button>
+      <div id="status" class="status hidden"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="settingsPage" class="center hidden">
+    <div class="card">
+      <h1>SETTINGS</h1>
+      <select><option>FPS 30</option><option>FPS 60</option><option>FPS 120</option></select>
+      <select>
+        <option>Graphics Low</option>
+        <option>Graphics Medium</option>
+        <option>Graphics High</option>
+        <option>Graphics Ultra</option>
+      </select>
+    </div>
+  </div>
 </div>
 
 <script>
-/* ================= FLOW CONTROL ================= */
-let accessType = "";
+// ================= LOADING =================
+let p=1;
+let bar=document.getElementById("bar");
+let txt=document.getElementById("loadTxt");
+let load=setInterval(()=>{
+  p++;
+  txt.innerText="Loading "+p+"%";
+  bar.style.width=p+"%";
+  if(p>=100){
+    clearInterval(load);
+    setTimeout(()=>{
+      loading.classList.add("hidden");
+      choice.classList.remove("hidden");
+    },500);
+  }
+},130);
 
-setTimeout(()=>{
-  loading.classList.add("hidden");
-  access.classList.remove("hidden");
-},15000);
-
-/* ================= ACCESS ================= */
-function chooseAccess(type){
-  accessType = type;
-  access.classList.add("hidden");
-  document.getElementById(type+"Page").classList.remove("hidden");
+// ================= NAV =================
+function openFeedback(){choice.classList.add("hidden");feedback.classList.remove("hidden")}
+function openComment(){choice.classList.add("hidden");comment.classList.remove("hidden")}
+function showMain(){hideAll();mainPage.classList.remove("hidden")}
+function showHack(){hideAll();hackPage.classList.remove("hidden")}
+function showSettings(){hideAll();settingsPage.classList.remove("hidden")}
+function hideAll(){
+  mainPage.classList.add("hidden");
+  hackPage.classList.add("hidden");
+  settingsPage.classList.add("hidden");
 }
 
-function submitAccess(){
-  // ===============================
-  // SAVE SYSTEM (FREEZE)
-  // ===============================
-  // not saving yet
+// ================= GOOGLE SCRIPT =================
+const WEB_APP_URL="PUT_YOUR_WEB_APP_URL_HERE";
 
-  document.getElementById(accessType+"Page").classList.add("hidden");
-  nav.style.display="flex";
-  showPage("main");
+function submitFeedback(){
+  if(!fb1.value||!fb2.value){alert("Required");vib();return}
+  fetch(WEB_APP_URL,{method:"POST",body:JSON.stringify({type:"FEEDBACK",a:fb1.value,b:fb2.value})})
+  .then(()=>enterMain());
+}
+function submitComment(){
+  if(!c1.value||!c2.value){alert("Required");vib();return}
+  fetch(WEB_APP_URL,{method:"POST",body:JSON.stringify({type:"COMMENT",a:c1.value,b:c2.value})})
+  .then(()=>enterMain());
+}
+function enterMain(){
+  feedback.classList.add("hidden");
+  comment.classList.add("hidden");
+  main.classList.remove("hidden");
 }
 
-/* ================= NAV ================= */
-function showPage(page){
-  document.querySelectorAll(".center").forEach(d=>d.classList.add("hidden"));
-  document.getElementById(page).classList.remove("hidden");
+// ================= FAKE BYPASS =================
+function vib(){navigator.vibrate&&navigator.vibrate([200,100,200])}
 
-  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
-  event.target.classList.add("active");
+function runBypass(){
+  if(!wifi.value||!net.value||!auto.value){
+    vib();alert("Complete all fields");return;
+  }
+  status.classList.remove("hidden");
+  status.innerText="SEARCHING...";
+  setTimeout(()=>{
+    status.innerText="WIFI DETECTED\nSCANNING...";
+    setTimeout(()=>{
+      status.innerText="SUCCESS\nPASSWORD: "+genPass();
+    },15000);
+  },25000);
 }
 
-/* ================= HACK WIFI ================= */
-function startBypass(){
-  let ok=true;
-  [wifi,usage,auto].forEach(i=>{
-    if(!i.value){i.classList.add("err");ok=false}
-    else i.classList.remove("err");
-  });
-  if(!ok){navigator.vibrate(400);return;}
-
-  terminal.classList.remove("hidden");
-  terminal.innerHTML="";
-  let count=0;
-
-  let typing=setInterval(()=>{
-    terminal.innerHTML += ">> bypassing system...\n";
-    terminal.scrollTop=terminal.scrollHeight;
-    count++;
-    if(count>=20){
-      clearInterval(typing);
-      wifiType.classList.remove("hidden");
-    }
-  },700);
-}
-
-function selectWifi(){
-  wifiType.classList.add("hidden");
-  terminal.innerHTML="";
-  let t=0;
-
-  let run=setInterval(()=>{
-    terminal.innerHTML+=">> cracking packets...\n";
-    terminal.scrollTop=terminal.scrollHeight;
-    t++;
-    if(t>=25){
-      clearInterval(run);
-      terminal.innerHTML+="\nSUCCESSFULLY\nPASSWORD: "+
-        Math.floor(Math.random()*1e8)+
-        Math.random().toString(36).slice(-3).toUpperCase();
-    }
-  },800);
+function genPass(){
+  let n=Math.floor(10000000+Math.random()*90000000);
+  let c="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return n+c[Math.floor(Math.random()*26)]+c[Math.floor(Math.random()*26)];
 }
 </script>
 
