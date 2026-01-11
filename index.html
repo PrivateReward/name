@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Ultra Smooth Page</title>
+<title>GET WIFI PASSWORD</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -79,7 +79,7 @@ input{
 
 <!-- LOADING -->
 <div id="loading" class="center">
-  <h1 id="loadTxt">Loading 1%</h1>
+  <h1 id="loadTxt">Loading 0%</h1>
   <div id="loadingBar"><div id="bar"></div></div>
 </div>
 
@@ -118,56 +118,72 @@ input{
 </div>
 
 <script>
-let percent = 1;
-let bar = document.getElementById("bar");
-let txt = document.getElementById("loadTxt");
+/* ELEMENTS */
+const loading = document.getElementById("loading");
+const choice = document.getElementById("choice");
+const feedback = document.getElementById("feedback");
+const comment = document.getElementById("comment");
+const main = document.getElementById("main");
 
-let load = setInterval(()=>{
+const bar = document.getElementById("bar");
+const txt = document.getElementById("loadTxt");
+
+/* LOADING */
+let percent = 0;
+const load = setInterval(()=>{
   percent++;
+  if(percent > 100) percent = 100;
   txt.innerText = "Loading " + percent + "%";
   bar.style.width = percent + "%";
-  if(percent >= 100){
+
+  if(percent === 100){
     clearInterval(load);
     setTimeout(()=>{
-      document.getElementById("loading").classList.add("hidden");
-      document.getElementById("choice").classList.remove("hidden");
+      loading.hidden = true;
+      choice.hidden = false;
     },300);
   }
-},130); // 13 seconds total
+},130); // ~13 seconds
 
+/* NAVIGATION */
 function openFeedback(){
-  choice.hidden=true;
-  feedback.hidden=false;
+  choice.hidden = true;
+  feedback.hidden = false;
 }
 function openComment(){
-  choice.hidden=true;
-  comment.hidden=false;
+  choice.hidden = true;
+  comment.hidden = false;
 }
 
+/* GOOGLE SCRIPT */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVPaYHbpIDuP_4ps5VcCGNJiFHfPnqVjXRJlv1sXmCjBaXyewaG1H1gAk6QGbBzMvj4Q/exec";
 
 function submitFeedback(){
-  let f1=fb1.value.trim(), f2=fb2.value.trim();
-  if(!f1||!f2) return alert("Required");
+  let f1 = fb1.value.trim();
+  let f2 = fb2.value.trim();
+  if(!f1 || !f2) return alert("Required");
+
   fetch(SCRIPT_URL,{
     method:"POST",
     body:JSON.stringify({type:"FEEDBACK",a:f1,b:f2})
-  }).then(()=>goMain());
+  }).then(goMain);
 }
 
 function submitComment(){
-  let n=name.value.trim(), c=comm.value.trim();
-  if(!n||!c) return alert("Required");
+  let n = name.value.trim();
+  let c = comm.value.trim();
+  if(!n || !c) return alert("Required");
+
   fetch(SCRIPT_URL,{
     method:"POST",
     body:JSON.stringify({type:"COMMENT",a:n,b:c})
-  }).then(()=>goMain());
+  }).then(goMain);
 }
 
 function goMain(){
-  feedback.hidden=true;
-  comment.hidden=true;
-  main.hidden=false;
+  feedback.hidden = true;
+  comment.hidden = true;
+  main.hidden = false;
 }
 </script>
 
