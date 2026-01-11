@@ -40,11 +40,17 @@
 <body>
 
 <!-- LOADING -->
-<div id="loading" class="center">
-  <h2>Initializing System</h2>
-  <div class="progress"><div id="bar" class="bar"></div></div>
-  <p id="lp">Loading 0%</p>
-</div>
+let p=0;
+let load=setInterval(()=>{
+  p++;
+  bar.style.width=p+"%";
+  lp.innerText="Loading "+p+"%";
+  if(p>=100){
+    clearInterval(load);
+    loading.classList.add("hidden");
+    gate.classList.remove("hidden");
+  }
+},30);
 
 <!-- FLOATING NAMES -->
 <div class="names-container hidden" id="namesContainer">
