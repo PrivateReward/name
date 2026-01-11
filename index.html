@@ -122,17 +122,18 @@ const lp = document.getElementById("lp");
   
 const WEBAPP = "https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
 
-let p=0;
-const bar=document.getElementById("bar");
-const lp=document.getElementById("lp");
+let p = 0;
+let load = setInterval(() => {
+  p++;
+  bar.style.width = p + "%";
+  lp.innerText = "Loading " + p + "%";
 
-let load=setInterval(()=>{
-  p++; bar.style.width=p+"%"; lp.innerText="Loading "+p+"%";
-  if(p>=100){clearInterval(load);
+  if (p >= 100) {
+    clearInterval(load);
     loading.classList.add("hidden");
     gate.classList.remove("hidden");
   }
-},30);
+}, 30);
 
 function showForm(x){
   fb.classList.add("hidden"); cm.classList.add("hidden");
