@@ -1,118 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>WiFi System</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultra Smooth Page</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
+*{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto}
 body{
   margin:0;
-  background:black;
-  color:#00ff00;
-  font-family:monospace;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+  overflow:hidden;
 }
-.screen{
-  padding:16px;
-  animation:fade .5s ease;
-}
-@keyframes fade{from{opacity:0}to{opacity:1}}
-input,button{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  background:black;
-  color:#00ff00;
-  border:1px solid #00ff00;
-}
-.bar{
-  height:10px;
-  border:1px solid #00ff00;
-  margin-top:10px;
-}
-.fill{
-  height:100%;
-  width:0%;
-  background:#00ff00;
-  transition:width .1s linear;
+.center{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  flex-direction:column;
 }
 .hidden{display:none}
+
+h1{font-weight:600;letter-spacing:1px}
+.card{
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(15px);
+  padding:25px;
+  border-radius:16px;
+  width:90%;
+  max-width:380px;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+button{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:600;
+  background:#00ffcc;
+  color:#000;
+  cursor:pointer;
+}
+button.alt{background:#00aaff}
+input{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:8px;
+  border:none;
+  outline:none;
+}
+.fade{animation:fade .6s ease}
+@keyframes fade{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+#loadingBar{
+  width:260px;
+  height:8px;
+  background:rgba(255,255,255,.2);
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:15px;
+}
+#bar{
+  height:100%;
+  width:0%;
+  background:#00ffcc;
+  transition:width .13s linear;
+}
 </style>
 </head>
+
 <body>
 
-<div id="app"></div>
+<!-- LOADING -->
+<div id="loading" class="center">
+  <h1 id="loadTxt">Loading 1%</h1>
+  <div id="loadingBar"><div id="bar"></div></div>
+</div>
+
+<!-- CHOICE -->
+<div id="choice" class="center hidden fade">
+  <div class="card">
+    <h1>Choose</h1>
+    <button onclick="openFeedback()">FEEDBACK</button>
+    <button class="alt" onclick="openComment()">COMMENT</button>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedback" class="center hidden fade">
+  <div class="card">
+    <h1>FEEDBACK</h1>
+    <input id="fb1" placeholder="Feedback 1" required>
+    <input id="fb2" placeholder="Feedback 2" required>
+    <button onclick="submitFeedback()">SUBMIT</button>
+  </div>
+</div>
+
+<!-- COMMENT -->
+<div id="comment" class="center hidden fade">
+  <div class="card">
+    <h1>COMMENT</h1>
+    <input id="name" placeholder="Your Name" required>
+    <input id="comm" placeholder="Your Comment" required>
+    <button onclick="submitComment()">SUBMIT</button>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="main" class="center hidden fade">
+  <h1>NOTHING</h1>
+</div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzfeoS6DOcuIlPbJGF8FyIGfzCNL93JC2-ymMg_OPAzN3l6jMwr1oawqOjd3pau6JQlvQ/exec";
-const app = document.getElementById("app");
+let percent = 1;
+let bar = document.getElementById("bar");
+let txt = document.getElementById("loadTxt");
 
-function render(html){
-  app.innerHTML = `<div class="screen">${html}</div>`;
+let load = setInterval(()=>{
+  percent++;
+  txt.innerText = "Loading " + percent + "%";
+  bar.style.width = percent + "%";
+  if(percent >= 100){
+    clearInterval(load);
+    setTimeout(()=>{
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("choice").classList.remove("hidden");
+    },300);
+  }
+},130); // 13 seconds total
+
+function openFeedback(){
+  choice.hidden=true;
+  feedback.hidden=false;
+}
+function openComment(){
+  choice.hidden=true;
+  comment.hidden=false;
 }
 
-function progress(sec, done){
-  const bar = document.querySelector(".fill");
-  let p=0;
-  const i=setInterval(()=>{
-    p+=100/(sec*10);
-    bar.style.width=p+"%";
-    if(p>=100){
-      clearInterval(i);
-      done();
-    }
-  },100);
-}
-
-render(`
-<h3>ENTER WIFI NAME</h3>
-<input id="wifi">
-<button onclick="scan1()">BYPASS</button>
-`);
-
-function scan1(){
-  render(`
-<h3>Scanning...</h3>
-<div class="bar"><div class="fill"></div></div>
-`);
-  progress(15, chooseType);
-}
-
-function chooseType(){
-  render(`
-<h3>WHAT KIND OF WIFI?</h3>
-<button onclick="scan2()">PRIVATE WIFI</button>
-<button onclick="scan2()">PUBLIC WIFI</button>
-`);
-}
-
-function scan2(){
-  render(`
-<h3>Bypassing Security...</h3>
-<div class="bar"><div class="fill"></div></div>
-`);
-  progress(15, feedbackForm);
-}
-
-function feedbackForm(){
-  render(`
-<h3>FEEDBACK</h3>
-<p>Send feedback to get the password</p>
-<input id="f1" placeholder="Feedback 1">
-<input id="f2" placeholder="Feedback 2">
-<button onclick="submitFeedback()">SUBMIT</button>
-`);
-}
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVPaYHbpIDuP_4ps5VcCGNJiFHfPnqVjXRJlv1sXmCjBaXyewaG1H1gAk6QGbBzMvj4Q/exec";
 
 function submitFeedback(){
-  fetch(API_URL,{
+  let f1=fb1.value.trim(), f2=fb2.value.trim();
+  if(!f1||!f2) return alert("Required");
+  fetch(SCRIPT_URL,{
     method:"POST",
-    body:JSON.stringify({
-      feedback1:document.getElementById("f1").value,
-      feedback2:document.getElementById("f2").value
-    })
-  }).then(()=>{
-    render(`<h3>PROCESSING COMPLETE</h3><p>Access Granted</p>`);
-  });
+    body:JSON.stringify({type:"FEEDBACK",a:f1,b:f2})
+  }).then(()=>goMain());
+}
+
+function submitComment(){
+  let n=name.value.trim(), c=comm.value.trim();
+  if(!n||!c) return alert("Required");
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({type:"COMMENT",a:n,b:c})
+  }).then(()=>goMain());
+}
+
+function goMain(){
+  feedback.hidden=true;
+  comment.hidden=true;
+  main.hidden=false;
 }
 </script>
 
