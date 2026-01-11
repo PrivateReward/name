@@ -23,6 +23,18 @@ button{cursor:pointer}
 @keyframes blink{50%{opacity:.2}}
 .progress{width:300px;border:1px solid #0f0}
 .bar{height:20px;width:0;background:#0f0}
+
+/* ✅ ADD LANG – WALAY GI-BAWAS */
+#loading{
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+}
+#gate{
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+}
 </style>
 </head>
 
@@ -119,7 +131,7 @@ const hacklog = document.getElementById("hacklog");
 
 const bar = document.getElementById("bar");
 const lp = document.getElementById("lp");
-  
+
 const WEBAPP = "https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
 
 let p = 0;
@@ -130,20 +142,24 @@ let load = setInterval(() => {
 
   if (p >= 100) {
     clearInterval(load);
+
     loading.classList.add("hidden");
+    loading.style.display = "none";   // ✅ ADD
+
     gate.classList.remove("hidden");
+    gate.style.display = "flex";      // ✅ ADD
   }
 }, 30);
 
 function showForm(x){
-  fb.classList.add("hidden"); cm.classList.add("hidden");
+  fb.classList.add("hidden"); 
+  cm.classList.add("hidden");
   document.getElementById(x).classList.remove("hidden");
 }
 
 function submitData(type){
   let f1 = type=="FEEDBACK"?fb1.value:cm1.value;
   let f2 = type=="FEEDBACK"?fb2.value:cm2.value;
-
   if(!f1 || !f2){navigator.vibrate(300);return;}
 
   fetch(WEBAPP,{
@@ -189,4 +205,4 @@ function bypass(){
 }
 </script>
 </body>
-  </html>
+</html>
