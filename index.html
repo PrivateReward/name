@@ -4,77 +4,128 @@
 <meta charset="UTF-8">
 <title>Fake WiFi Hacker</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body {
-  margin:0; font-family: monospace; background:#000; color:#0f0;
+/* ================= BASIC THEME ================= */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:monospace;
+  background:#000;
+  color:#0f0;
+  overflow:hidden;
 }
-.hidden {display:none;}
-.center {
-  display:flex; align-items:center; justify-content:center;
-  height:100vh; flex-direction:column;
+.hidden{display:none}
+.center{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
 }
-input,select,button {
-  background:#000; border:1px solid #0f0; color:#0f0;
-  padding:10px; margin:5px; width:250px;
+
+/* ================= LOADING ================= */
+#loadingCircle{
+  width:120px;height:120px;
+  border:6px solid #033;
+  border-top:6px solid #0f0;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
 }
-button {cursor:pointer;}
-.err {border-color:red; color:red;}
-/* Floating Names */
-.names-container{
-  display:flex; justify-content:space-around;
-  width:100%; position:fixed; top:10px;
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ================= BUTTONS & INPUTS ================= */
+input,select,button{
+  background:#000;
+  color:#0f0;
+  border:1px solid #0f0;
+  padding:10px;
+  margin:6px;
+  width:260px;
 }
-.name{
-  padding:5px 10px; border:1px solid #0f0; cursor:pointer; transition:0.3s;
+button{cursor:pointer}
+.err{border-color:red;color:red}
+
+/* ================= FLOATING NAV ================= */
+#nav{
+  position:fixed;
+  left:15px;
+  top:50%;
+  transform:translateY(-50%);
+  display:none;
+  flex-direction:column;
+  gap:20px;
 }
-.name.selected{color:silver; border-color:silver;}
-/* Animations */
-.anim{animation:blink 1s infinite;}
+.nav-item{
+  cursor:pointer;
+  color:#0f0;
+  opacity:.6;
+}
+.nav-item.active{
+  color:silver;
+  opacity:1;
+}
+
+/* ================= TERMINAL ================= */
+#terminal{
+  width:90%;
+  max-width:700px;
+  height:300px;
+  border:1px solid #0f0;
+  padding:10px;
+  overflow:hidden;
+  font-size:14px;
+}
+.blink{animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.2}}
-/* Loading bar */
-#loading .progress{width:300px; border:1px solid #0f0;}
-#loading .bar{height:20px; width:0; background:#0f0;}
 </style>
 </head>
+
 <body>
 
-<!-- LOADING -->
+<!-- ================= LOADING ================= -->
 <div id="loading" class="center">
-  <h2>Initializing System</h2>
-  <div class="progress"><div id="bar" class="bar"></div></div>
-  <p id="lp">Loading 0%</p>
+  <div id="loadingCircle"></div>
+  <p>Loading system...</p>
 </div>
 
-<!-- FLOATING NAMES -->
-<div class="names-container hidden" id="namesContainer">
-  <div class="name selected" data-target="main">MAIN</div>
-  <div class="name" data-target="hack">HACK WIFI</div>
-  <div class="name" data-target="settings">SETTINGS</div>
+<!-- ================= ACCESS ================= -->
+<div id="access" class="center hidden">
+  <h2>ACCESS REQUIRED</h2>
+  <button onclick="chooseAccess('comment')">COMMENT</button>
+  <button onclick="chooseAccess('feedback')">FEEDBACK</button>
 </div>
 
-<!-- FEEDBACK / COMMENT -->
-<div id="gate" class="center hidden">
-  <h3>ACCESS REQUIRED</h3>
-  <button onclick="showForm('fb')">FEEDBACK</button>
-  <button onclick="showForm('cm')">COMMENT</button>
-  <div id="fb" class="hidden">
-    <input id="fb1" placeholder="Feedback 1">
-    <input id="fb2" placeholder="Feedback 2">
-    <button onclick="submitData('FEEDBACK')">SUBMIT</button>
-  </div>
-  <div id="cm" class="hidden">
-    <input id="cm1" placeholder="Comment 1">
-    <input id="cm2" placeholder="Comment 2">
-    <button onclick="submitData('COMMENT')">SUBMIT</button>
-  </div>
+<!-- ================= COMMENT ================= -->
+<div id="commentPage" class="center hidden">
+  <h3>COMMENT</h3>
+  <input id="c1" placeholder="Comment 1">
+  <input id="c2" placeholder="Comment 2">
+  <button onclick="submitAccess()">SUBMIT</button>
 </div>
 
-<!-- MAIN -->
+<!-- ================= FEEDBACK ================= -->
+<div id="feedbackPage" class="center hidden">
+  <h3>FEEDBACK</h3>
+  <input id="f1" placeholder="Feedback 1">
+  <input id="f2" placeholder="Feedback 2">
+  <button onclick="submitAccess()">SUBMIT</button>
+</div>
+
+<!-- ================= FLOATING NAV ================= -->
+<div id="nav">
+  <div class="nav-item active" onclick="showPage('main')">Main</div>
+  <div class="nav-item" onclick="showPage('hack')">Hack Wifi</div>
+  <div class="nav-item" onclick="showPage('settings')">Settings</div>
+</div>
+
+<!-- ================= MAIN ================= -->
 <div id="main" class="center hidden">
-  <h2 class="anim">SYSTEM READY</h2>
+  <h1 class="blink">SYSTEM IS READY</h1>
 </div>
 
-<!-- HACK WIFI -->
+<!-- ================= HACK WIFI ================= -->
 <div id="hack" class="center hidden">
   <input id="wifi" placeholder="ENTER WIFI NAME">
   <select id="usage">
@@ -88,126 +139,119 @@ button {cursor:pointer;}
     <option>ON</option>
     <option>OFF</option>
   </select>
-  <button onclick="bypass()">BYPASS</button>
-  <p id="hacklog"></p>
+  <button onclick="startBypass()">BYPASS</button>
+
+  <div id="terminal" class="hidden"></div>
+
+  <div id="wifiType" class="hidden">
+    <p>WIFI DETECTED</p>
+    <button onclick="selectWifi()">PRIVATE</button>
+    <button onclick="selectWifi()">PUBLIC</button>
+  </div>
 </div>
 
-<!-- SETTINGS -->
+<!-- ================= SETTINGS ================= -->
 <div id="settings" class="center hidden">
   <label>FPS</label>
-  <input type="range" min="30" max="144">
+  <select>
+    <option>30</option><option>60</option><option>90</option>
+    <option>120</option><option>240</option>
+  </select>
+
   <label>Graphics</label>
   <select>
-    <option>LOW</option>
-    <option>MEDIUM</option>
-    <option>HIGH</option>
-    <option>ULTRA</option>
+    <option>Low</option><option>Medium</option><option>High</option>
+    <option>Ultra</option><option>Ultra HD</option><option>ULTRA HD 4K</option>
+  </select>
+
+  <label>Smooth</label>
+  <select><option>ON</option><option>OFF</option></select>
+
+  <label>Effects</label>
+  <select>
+    <option>Low</option><option>Medium</option>
+    <option>High</option><option>Super High</option>
   </select>
 </div>
 
 <script>
-const loading = document.getElementById("loading");
-const gate = document.getElementById("gate");
-const fb = document.getElementById("fb");
-const cm = document.getElementById("cm");
-const fb1 = document.getElementById("fb1");
-const fb2 = document.getElementById("fb2");
-const cm1 = document.getElementById("cm1");
-const cm2 = document.getElementById("cm2");
+/* ================= FLOW CONTROL ================= */
+let accessType = "";
 
-const namesContainer = document.getElementById("namesContainer");
-const names = document.querySelectorAll(".name");
-const main = document.getElementById("main");
-const hack = document.getElementById("hack");
-const settings = document.getElementById("settings");
+setTimeout(()=>{
+  loading.classList.add("hidden");
+  access.classList.remove("hidden");
+},15000);
 
-const wifi = document.getElementById("wifi");
-const usage = document.getElementById("usage");
-const auto = document.getElementById("auto");
-const hacklog = document.getElementById("hacklog");
-
-const bar = document.getElementById("bar");
-const lp = document.getElementById("lp");
-
-const WEBAPP = "YOUR_SAVE_SYSTEM_URL_HERE"; // Untouchable
-
-/* ===============================
-   SAVE SYSTEM ZONE (UNTOUCHABLE)
-=============================== */
-
-let p = 0;
-let load = setInterval(() => {
-  p++;
-  bar.style.width = p + "%";
-  lp.innerText = "Loading " + p + "%";
-  if(p >= 100){
-    clearInterval(load);
-    loading.style.transition="opacity 0.5s";
-    loading.style.opacity=0;
-    setTimeout(()=>{loading.classList.add("hidden"); gate.classList.remove("hidden");},500);
-  }
-});
-
-function showForm(x){
-  fb.classList.add("hidden"); cm.classList.add("hidden");
-  document.getElementById(x).classList.remove("hidden");
+/* ================= ACCESS ================= */
+function chooseAccess(type){
+  accessType = type;
+  access.classList.add("hidden");
+  document.getElementById(type+"Page").classList.remove("hidden");
 }
 
-function submitData(type){
-  let f1 = type=="FEEDBACK"?fb1.value:cm1.value;
-  let f2 = type=="FEEDBACK"?fb2.value:cm2.value;
-  if(!f1 || !f2){navigator.vibrate(300); return;}
-  fetch(WEBAPP,{
-    method:"POST",
-    body:JSON.stringify({type:type, field1:f1, field2:f2, ua:navigator.userAgent})
-  }).then(()=>{
-    gate.classList.add("hidden");
-    namesContainer.classList.remove("hidden");
-    showMain();
-  });
+function submitAccess(){
+  // ===============================
+  // SAVE SYSTEM (FREEZE)
+  // ===============================
+  // not saving yet
+
+  document.getElementById(accessType+"Page").classList.add("hidden");
+  nav.style.display="flex";
+  showPage("main");
 }
 
-function hideAll(){
-  main.classList.add("hidden");
-  hack.classList.add("hidden");
-  settings.classList.add("hidden");
+/* ================= NAV ================= */
+function showPage(page){
+  document.querySelectorAll(".center").forEach(d=>d.classList.add("hidden"));
+  document.getElementById(page).classList.remove("hidden");
+
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  event.target.classList.add("active");
 }
 
-function showMain(){hideAll(); main.classList.remove("hidden");}
-function showHack(){hideAll(); hack.classList.remove("hidden");}
-function showSettings(){hideAll(); settings.classList.remove("hidden");}
-
-/* Floating Names Interaction */
-names.forEach(n=>{
-  n.addEventListener("click",()=>{
-    names.forEach(x=>x.classList.remove("selected"));
-    n.classList.add("selected");
-    const target = n.getAttribute("data-target");
-    if(target==="main") showMain();
-    if(target==="hack") showHack();
-    if(target==="settings") showSettings();
-  });
-});
-
-/* Hack WiFi Simulation */
-function bypass(){
+/* ================= HACK WIFI ================= */
+function startBypass(){
   let ok=true;
   [wifi,usage,auto].forEach(i=>{
-    if(!i.value){i.classList.add("err"); ok=false;} 
+    if(!i.value){i.classList.add("err");ok=false}
     else i.classList.remove("err");
   });
-  if(!ok){navigator.vibrate(400); return;}
-  hacklog.innerHTML="<span class='anim'>SEARCHING...</span>";
-  setTimeout(()=>{
-    hacklog.innerHTML="<span style='color:#0f0;' class='anim'>SEARCHING...</span>";
-    setTimeout(()=>{
-      hacklog.innerHTML="WIFI DETECTED<br>PRIVATE / PUBLIC";
-      setTimeout(()=>{
-        hacklog.innerHTML="SUCCESSFULLY<br>PASSWORD = "+Math.random().toString(36).slice(-10).toUpperCase();
-      },15000);
-    },2500);
-  },500);
+  if(!ok){navigator.vibrate(400);return;}
+
+  terminal.classList.remove("hidden");
+  terminal.innerHTML="";
+  let count=0;
+
+  let typing=setInterval(()=>{
+    terminal.innerHTML += ">> bypassing system...\n";
+    terminal.scrollTop=terminal.scrollHeight;
+    count++;
+    if(count>=20){
+      clearInterval(typing);
+      wifiType.classList.remove("hidden");
+    }
+  },700);
+}
+
+function selectWifi(){
+  wifiType.classList.add("hidden");
+  terminal.innerHTML="";
+  let t=0;
+
+  let run=setInterval(()=>{
+    terminal.innerHTML+=">> cracking packets...\n";
+    terminal.scrollTop=terminal.scrollHeight;
+    t++;
+    if(t>=25){
+      clearInterval(run);
+      terminal.innerHTML+="\nSUCCESSFULLY\nPASSWORD: "+
+        Math.floor(Math.random()*1e8)+
+        Math.random().toString(36).slice(-3).toUpperCase();
+    }
+  },800);
 }
 </script>
+
 </body>
 </html>
