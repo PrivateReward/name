@@ -16,11 +16,7 @@
 </head>
 <body>
 
-<!-- Loading Screen -->
-<div id="loadingScreen" class="center">
-  <div class="green-text">Loading Ultra HD 4K Graphics...</div>
-  <div class="green-text" id="loadingCounter">15</div>
-</div>
+<!-- LOADING SCREEN 
 
 <!-- Feedback / Comment Choice -->
 <div id="choiceScreen" class="center hidden">
@@ -70,9 +66,7 @@ let selectedType = "";
 /////////////////////////
 // Loading Logic
 /////////////////////////
-let loadTime = 15;
-const loadingCounter = document.getElementById("loadingCounter");
-const loadingScreen = document.getElementById("loadingScreen");
+
 const choiceScreen = document.getElementById("choiceScreen");
 
 const loadingInterval = setInterval(()=>{
