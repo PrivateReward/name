@@ -1,300 +1,201 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>System Interface</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-/* ===== GLOBAL ===== */
-*{box-sizing:border-box;font-family:system-ui,Segoe UI,Roboto}
 body{
   margin:0;
   background:#000;
   color:#0f0;
-  overflow:hidden;
+  font-family:monospace;
 }
-.hidden{display:none}
+.page{display:none;padding:20px}
+.show{display:block}
 
-/* ===== LOADING ===== */
-#loading{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-}
-.circle{
-  width:120px;height:120px;
-  border:8px solid rgba(0,255,0,.2);
-  border-top:8px solid #0f0;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-#loadTxt{margin-top:20px;font-size:18px}
-
-/* ===== PAGES ===== */
-.page{
-  position:fixed;
-  inset:0;
-  padding:20px;
-}
-.card{
-  max-width:400px;
-  margin:auto;
-  background:rgba(0,255,0,.05);
-  border:1px solid #0f0;
-  padding:20px;
-  border-radius:12px;
-}
 input,select,button{
   width:100%;
-  padding:12px;
+  padding:10px;
   margin-top:10px;
   background:#000;
   color:#0f0;
   border:1px solid #0f0;
 }
-button{cursor:pointer}
 
-/* ===== SIDEBAR ===== */
 #sidebar{
   position:fixed;
-  top:50%;
-  left:10px;
-  transform:translateY(-50%);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-#sidebar button{
-  width:120px;
-}
-
-/* ===== TERMINAL ===== */
-#terminal{
-  background:#000;
-  border:1px solid #0f0;
-  height:70vh;
-  overflow:auto;
+  left:0;
+  top:0;
+  bottom:0;
+  width:140px;
+  border-right:1px solid #0f0;
   padding:10px;
-  font-size:14px;
-  animation:glow 1s infinite alternate;
-}
-@keyframes glow{
-  from{text-shadow:0 0 5px #0f0}
-  to{text-shadow:0 0 15px #0f0}
 }
 
-/* ===== SETTINGS ===== */
-.range{
-  display:flex;
-  gap:10px;
-  margin-top:10px;
+#content{
+  margin-left:150px;
+  padding:20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- LOADING -->
-<div id="loading">
-  <div class="circle"></div>
-  <div id="loadTxt">Loading 1%</div>
+<!-- 1. LOADING -->
+<div id="loading" class="page show">
+  <h2>Loading...</h2>
+  <p id="loadText">1%</p>
 </div>
 
-<!-- CHOICE -->
-<div id="choice" class="page hidden">
-  <div class="card">
-    <h2>CHOOSE</h2>
-    <button onclick="openComment()">COMMENT</button>
-    <button onclick="openFeedback()">FEEDBACK</button>
-  </div>
+<!-- 2. CHOICE -->
+<div id="choice" class="page">
+  <h2>Choose</h2>
+  <button onclick="openComment()">COMMENT</button>
+  <button onclick="openFeedback()">FEEDBACK</button>
 </div>
 
-<!-- COMMENT -->
-<div id="comment" class="page hidden">
-  <div class="card">
-    <h2>COMMENT</h2>
-    <input placeholder="Comment 1" id="c1">
-    <input placeholder="Comment 2" id="c2">
-    <button onclick="submitGate()">SUBMIT</button>
-  </div>
+<!-- 3A. COMMENT -->
+<div id="comment" class="page">
+  <h2>COMMENT</h2>
+  <input placeholder="Comment 1">
+  <input placeholder="Comment 2">
+  <button onclick="enterApp()">SUBMIT</button>
 </div>
 
-<!-- FEEDBACK -->
-<div id="feedback" class="page hidden">
-  <div class="card">
-    <h2>FEEDBACK</h2>
-    <input placeholder="Feedback 1" id="f1">
-    <input placeholder="Feedback 2" id="f2">
-    <button onclick="submitGate()">SUBMIT</button>
-  </div>
+<!-- 3B. FEEDBACK -->
+<div id="feedback" class="page">
+  <h2>FEEDBACK</h2>
+  <input placeholder="Feedback 1">
+  <input placeholder="Feedback 2">
+  <button onclick="enterApp()">SUBMIT</button>
 </div>
 
-<!-- MAIN -->
-<div id="main" class="page hidden">
+<!-- 4. MAIN APP -->
+<div id="app" class="page">
+
+  <!-- SIDEBAR -->
   <div id="sidebar">
     <button onclick="showMain()">Main</button>
     <button onclick="showHack()">Hack Wifi</button>
     <button onclick="showSettings()">Settings</button>
   </div>
 
-  <div id="mainPage">
-    <h1>SYSTEM IS READY</h1>
-  </div>
+  <!-- CONTENT -->
+  <div id="content">
 
-  <!-- HACK WIFI -->
-  <div id="hack" class="hidden">
-    <div class="card">
-      <h3>HACK WIFI</h3>
-      <input id="wifi" placeholder="Enter Wifi Name">
-      <select id="usage">
-        <option value="">Select Network Usage</option>
+    <!-- MAIN PAGE -->
+    <div id="mainPage">
+      <h2>SYSTEM IS READY</h2>
+    </div>
+
+    <!-- HACK WIFI PAGE -->
+    <div id="hackPage" style="display:none">
+      <h2>HACK WIFI</h2>
+
+      <input placeholder="Enter WiFi Name">
+
+      <select>
+        <option>Select Network Usage</option>
         <option>Detect Automatically</option>
-        <option>Treat as metered</option>
-        <option>Treat as unmetered</option>
+        <option>Treat as Metered</option>
+        <option>Treat as Unmetered</option>
       </select>
-      <select id="auto">
-        <option value="">Auto Connect</option>
-        <option>On</option>
-        <option>Off</option>
+
+      <select>
+        <option>Auto Connect</option>
+        <option>ON</option>
+        <option>OFF</option>
       </select>
-      <button onclick="startBypass()">BYPASS</button>
+
+      <button>BYPASS</button>
     </div>
 
-    <div id="terminal" class="hidden"></div>
-  </div>
+    <!-- SETTINGS PAGE -->
+    <div id="settingsPage" style="display:none">
+      <h2>SETTINGS</h2>
 
-  <!-- SETTINGS -->
-  <div id="settings" class="hidden">
-    <div class="card">
-      <h3>SETTINGS</h3>
-      <label>FPS</label>
       <select>
-        <option>30</option><option>60</option><option>90</option>
-        <option>120</option><option>240</option>
+        <option>FPS</option>
+        <option>30</option>
+        <option>60</option>
+        <option>90</option>
+        <option>120</option>
+        <option>240</option>
       </select>
 
-      <label>Graphics</label>
       <select>
-        <option>Low</option><option>Medium</option><option>High</option>
-        <option>Ultra</option><option>Ultra HD</option><option>ULTRA HD 4K</option>
+        <option>Graphics</option>
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+        <option>Ultra</option>
+        <option>Ultra HD</option>
+        <option>Ultra HD 4K</option>
       </select>
 
-      <label>Smooth</label>
-      <select><option>On</option><option>Off</option></select>
-
-      <label>Effects</label>
       <select>
-        <option>Low</option><option>Medium</option>
-        <option>High</option><option>Super High</option>
+        <option>Smooth</option>
+        <option>ON</option>
+        <option>OFF</option>
       </select>
 
-      <!-- FREEZE SAVE SYSTEM -->
-      <!-- SaveSystem: FREEZE MODE (no code yet) -->
+      <select>
+        <option>Effects</option>
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+        <option>Super High</option>
+      </select>
     </div>
+
   </div>
 </div>
 
 <script>
-/* ===== LOADING ===== */
-let p=1;
-const txt=document.getElementById("loadTxt");
-const load=setInterval(()=>{
-  txt.innerText="Loading "+p+"%";
+/* LOADING */
+let p = 1;
+const loadText = document.getElementById("loadText");
+const loadTimer = setInterval(()=>{
   p++;
-  if(p>100){
-    clearInterval(load);
-    loading.classList.add("hidden");
-    choice.classList.remove("hidden");
+  loadText.textContent = p + "%";
+  if(p >= 100){
+    clearInterval(loadTimer);
+    showPage("choice");
   }
-},150); // ~15s
+},150);
 
-/* ===== GATE ===== */
-function openComment(){
-  choice.classList.add("hidden");
-  comment.classList.remove("hidden");
-}
-function openFeedback(){
-  choice.classList.add("hidden");
-  feedback.classList.remove("hidden");
-}
-function submitGate(){
-  choice.classList.add("hidden");
-  comment.classList.add("hidden");
-  feedback.classList.add("hidden");
-  main.classList.remove("hidden");
+/* PAGE SWITCHER */
+function showPage(id){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+  document.getElementById(id).classList.add("show");
 }
 
-/* ===== NAV ===== */
+/* CHOICE */
+function openComment(){ showPage("comment"); }
+function openFeedback(){ showPage("feedback"); }
+
+/* ENTER APP */
+function enterApp(){ showPage("app"); showMain(); }
+
+/* SIDEBAR */
 function showMain(){
   mainPage.style.display="block";
-  hack.style.display="none";
-  settings.style.display="none";
+  hackPage.style.display="none";
+  settingsPage.style.display="none";
 }
 function showHack(){
   mainPage.style.display="none";
-  hack.style.display="block";
-  settings.style.display="none";
+  hackPage.style.display="block";
+  settingsPage.style.display="none";
 }
 function showSettings(){
   mainPage.style.display="none";
-  hack.style.display="none";
-  settings.style.display="block";
-}
-
-/* ===== BYPASS ===== */
-function startBypass(){
-  if(!wifi.value||!usage.value||!auto.value){
-    navigator.vibrate?.(200);
-    [wifi,usage,auto].forEach(i=>{
-      if(!i.value) i.style.borderColor="red";
-    });
-    return;
-  }
-
-  terminal.innerHTML="";
-  terminal.classList.remove("hidden");
-  let t=0;
-  const scan=setInterval(()=>{
-    terminal.innerHTML+=`[+] Scanning packets...<br>`;
-    terminal.scrollTop=terminal.scrollHeight;
-    t++;
-    if(t>15){
-      clearInterval(scan);
-      askType();
-    }
-  },1000);
-}
-
-function askType(){
-  terminal.innerHTML+=`
-    <br>WIFI DETECTED<br>
-    WHAT KIND OF WIFI?<br>
-    <button onclick="finalScan()">PRIVATE</button>
-    <button onclick="finalScan()">PUBLIC</button><br><br>
-  `;
-}
-
-function finalScan(){
-  let t=0;
-  const run=setInterval(()=>{
-    terminal.innerHTML+=`[+] Bypassing security layer...<br>`;
-    terminal.scrollTop=terminal.scrollHeight;
-    t++;
-    if(t>20){
-      clearInterval(run);
-      const pass=
-        Math.floor(10000000+Math.random()*90000000)+
-        Math.random().toString(36).substring(2,5).toUpperCase();
-      terminal.innerHTML+=`<br>SUCCESSFULLY<br>PASSWORD: ${pass}`;
-    }
-  },1000);
+  hackPage.style.display="none";
+  settingsPage.style.display="block";
 }
 </script>
 
 </body>
-  </html>
+</html>
