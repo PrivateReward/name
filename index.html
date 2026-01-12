@@ -125,28 +125,29 @@ button:hover{
 const webAppUrl = "https://script.google.com/macros/s/AKfycbz-HYMjDrY0_3XDRP3ZHnki6z1KPi83s8hSFxf5Ar5JyUL54n6CO_-I5UsdJMGpo-NM/exec";
 
 /* ====== INTRO LOADING (FIXED) ====== */
-let p = 0;
 const percent = document.getElementById("percent");
 const introDiv = document.getElementById("intro");
 const formDiv = document.getElementById("form");
 
-const introInterval = setInterval(() => {
-  p++;
-  percent.textContent = p + "%";
+const INTRO_DURATION = 23000; // 23 seconds
+let startTime = null;
 
-  if (p >= 100) {
-    endIntro();
+function introLoop(timestamp){
+  if(!startTime) startTime = timestamp;
+  const elapsed = timestamp - startTime;
+  const progress = Math.min(elapsed / INTRO_DURATION, 1);
+
+  percent.textContent = Math.floor(progress * 100) + "%";
+
+  if(progress < 1){
+    requestAnimationFrame(introLoop);
+  } else {
+    introDiv.classList.add("hidden");
+    formDiv.classList.remove("hidden");
   }
-}, 230); // ~23 seconds
-
-// FAILSAFE – MASKI MO LAG ANG BROWSER
-setTimeout(endIntro, 23500);
-
-function endIntro(){
-  clearInterval(introInterval);
-  introDiv.classList.add("hidden");
-  formDiv.classList.remove("hidden");
 }
+
+requestAnimationFrame(introLoop);
 
 /* ====== SEARCH ====== */
 function startSearch(){
