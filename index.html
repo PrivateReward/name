@@ -6,12 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  margin:0;
-  background:#000;
-  color:#0f0;
-  font-family:monospace;
-}
+body{margin:0;background:#000;color:#0f0;font-family:monospace}
 .page{display:none;padding:20px}
 .show{display:block}
 
@@ -25,175 +20,147 @@ input,select,button{
 }
 
 #sidebar{
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  width:140px;
-  border-right:1px solid #0f0;
-  padding:10px;
+  position:fixed;left:0;top:0;bottom:0;
+  width:140px;border-right:1px solid #0f0;padding:10px;
 }
-
-#content{
-  margin-left:150px;
-  padding:20px;
-}
+#content{margin-left:150px;padding:20px}
+#terminal{white-space:pre-line}
+.red{border-color:red}
 </style>
 </head>
 
 <body>
 
-<!-- 1. LOADING -->
+<!-- LOADING -->
 <div id="loading" class="page show">
   <h2>Loading...</h2>
   <p id="loadText">1%</p>
 </div>
 
-<!-- 2. CHOICE -->
+<!-- CHOICE -->
 <div id="choice" class="page">
   <h2>Choose</h2>
   <button onclick="openComment()">COMMENT</button>
   <button onclick="openFeedback()">FEEDBACK</button>
 </div>
 
-<!-- 3A. COMMENT -->
+<!-- COMMENT -->
 <div id="comment" class="page">
   <h2>COMMENT</h2>
-  <input placeholder="Comment 1">
-  <input placeholder="Comment 2">
-  <button onclick="enterApp()">SUBMIT</button>
+  <input id="c1" placeholder="Comment 1">
+  <input id="c2" placeholder="Comment 2">
+  <button onclick="submitComment()">SUBMIT</button>
 </div>
 
-<!-- 3B. FEEDBACK -->
+<!-- FEEDBACK -->
 <div id="feedback" class="page">
   <h2>FEEDBACK</h2>
-  <input placeholder="Feedback 1">
-  <input placeholder="Feedback 2">
-  <button onclick="enterApp()">SUBMIT</button>
+  <input id="f1" placeholder="Feedback 1">
+  <input id="f2" placeholder="Feedback 2">
+  <button onclick="submitFeedback()">SUBMIT</button>
 </div>
 
-<!-- 4. MAIN APP -->
+<!-- APP -->
 <div id="app" class="page">
 
-  <!-- SIDEBAR -->
   <div id="sidebar">
     <button onclick="showMain()">Main</button>
     <button onclick="showHack()">Hack Wifi</button>
     <button onclick="showSettings()">Settings</button>
   </div>
 
-  <!-- CONTENT -->
   <div id="content">
 
-    <!-- MAIN PAGE -->
     <div id="mainPage">
       <h2>SYSTEM IS READY</h2>
     </div>
 
-    <!-- HACK WIFI PAGE -->
     <div id="hackPage" style="display:none">
       <h2>HACK WIFI</h2>
 
-      <input placeholder="Enter WiFi Name">
-
-      <select>
-        <option>Select Network Usage</option>
+      <input id="wifi" placeholder="Enter WiFi Name">
+      <select id="usage">
+        <option value="">Select Network Usage</option>
         <option>Detect Automatically</option>
         <option>Treat as Metered</option>
         <option>Treat as Unmetered</option>
       </select>
-
-      <select>
-        <option>Auto Connect</option>
+      <select id="auto">
+        <option value="">Auto Connect</option>
         <option>ON</option>
         <option>OFF</option>
       </select>
 
-      <button>BYPASS</button>
+      <button onclick="startBypass()">BYPASS</button>
+      <div id="terminal"></div>
     </div>
 
-    <!-- SETTINGS PAGE -->
     <div id="settingsPage" style="display:none">
       <h2>SETTINGS</h2>
-
-      <select>
-        <option>FPS</option>
-        <option>30</option>
-        <option>60</option>
-        <option>90</option>
-        <option>120</option>
-        <option>240</option>
-      </select>
-
-      <select>
-        <option>Graphics</option>
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-        <option>Ultra</option>
-        <option>Ultra HD</option>
-        <option>Ultra HD 4K</option>
-      </select>
-
-      <select>
-        <option>Smooth</option>
-        <option>ON</option>
-        <option>OFF</option>
-      </select>
-
-      <select>
-        <option>Effects</option>
-        <option>Low</option>
-        <option>Medium</option>
-        <option>High</option>
-        <option>Super High</option>
-      </select>
+      <select><option>FPS</option><option>30</option><option>60</option><option>120</option><option>240</option></select>
+      <select><option>Graphics</option><option>Low</option><option>High</option><option>Ultra HD 4K</option></select>
+      <select><option>Smooth</option><option>ON</option><option>OFF</option></select>
+      <select><option>Effects</option><option>Low</option><option>Super High</option></select>
     </div>
 
   </div>
 </div>
 
 <script>
-/* LOADING */
-let p = 1;
-const loadText = document.getElementById("loadText");
-const loadTimer = setInterval(()=>{
-  p++;
-  loadText.textContent = p + "%";
-  if(p >= 100){
-    clearInterval(loadTimer);
-    showPage("choice");
-  }
+/* ================= LOADING ================= */
+let p=1;
+const loadText=document.getElementById("loadText");
+const t=setInterval(()=>{
+  p++; loadText.textContent=p+"%";
+  if(p>=100){clearInterval(t); showPage("choice");}
 },150);
 
-/* PAGE SWITCHER */
+/* ================= NAV ================= */
 function showPage(id){
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("show"));
+  document.querySelectorAll(".page").forEach(x=>x.classList.remove("show"));
   document.getElementById(id).classList.add("show");
 }
+function openComment(){showPage("comment")}
+function openFeedback(){showPage("feedback")}
+function enterApp(){showPage("app"); showMain()}
 
-/* CHOICE */
-function openComment(){ showPage("comment"); }
-function openFeedback(){ showPage("feedback"); }
+function showMain(){mainPage.style.display="block";hackPage.style.display="none";settingsPage.style.display="none"}
+function showHack(){mainPage.style.display="none";hackPage.style.display="block";settingsPage.style.display="none"}
+function showSettings(){mainPage.style.display="none";hackPage.style.display="none";settingsPage.style.display="block"}
 
-/* ENTER APP */
-function enterApp(){ showPage("app"); showMain(); }
+/* ================= SAVE SYSTEM ================= */
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
 
-/* SIDEBAR */
-function showMain(){
-  mainPage.style.display="block";
-  hackPage.style.display="none";
-  settingsPage.style.display="none";
+function submitComment(){
+  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({type:"COMMENT",a:c1.value,b:c2.value})})
+  .then(()=>enterApp());
 }
-function showHack(){
-  mainPage.style.display="none";
-  hackPage.style.display="block";
-  settingsPage.style.display="none";
+
+function submitFeedback(){
+  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({type:"FEEDBACK",a:f1.value,b:f2.value})})
+  .then(()=>enterApp());
 }
-function showSettings(){
-  mainPage.style.display="none";
-  hackPage.style.display="none";
-  settingsPage.style.display="block";
+
+/* ================= FAKE BYPASS ================= */
+function startBypass(){
+  if(!wifi.value||!usage.value||!auto.value){
+    navigator.vibrate?.(200);
+    return;
+  }
+  terminal.textContent="";
+  let i=0;
+  const run=setInterval(()=>{
+    terminal.textContent+="[SEARCHING] packet "+Math.random().toString(36).slice(2)+"\n";
+    i++;
+    if(i>25){
+      clearInterval(run);
+      terminal.textContent+="\nSUCCESS!\nPASSWORD: "+genPass();
+    }
+  },600);
+}
+function genPass(){
+  return Math.floor(10000000+Math.random()*90000000)+
+         Math.random().toString(36).slice(2,5).toUpperCase();
 }
 </script>
 
