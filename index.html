@@ -2,30 +2,47 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>System</title>
+<title>FAKE WIFI SYSTEM</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{margin:0;background:#000;color:#0f0;font-family:monospace}
+body{
+  margin:0;
+  background:#000;
+  color:#00ff66;
+  font-family:monospace;
+}
 .page{display:none;padding:20px}
 .show{display:block}
 
-input,select,button{
+input,button{
   width:100%;
-  padding:10px;
+  padding:12px;
   margin-top:10px;
   background:#000;
-  color:#0f0;
-  border:1px solid #0f0;
+  color:#00ff66;
+  border:1px solid #00ff66;
 }
 
-#sidebar{
-  position:fixed;left:0;top:0;bottom:0;
-  width:140px;border-right:1px solid #0f0;padding:10px;
+#terminal{
+  border:1px solid #00ff66;
+  padding:10px;
+  height:300px;
+  overflow:auto;
+  white-space:pre-line;
 }
-#content{margin-left:150px;padding:20px}
-#terminal{white-space:pre-line}
-.red{border-color:red}
+
+.progress{
+  width:100%;
+  height:8px;
+  background:#033;
+  margin-top:10px;
+}
+.bar{
+  height:100%;
+  width:0%;
+  background:#00ff66;
+}
 </style>
 </head>
 
@@ -33,23 +50,15 @@ input,select,button{
 
 <!-- LOADING -->
 <div id="loading" class="page show">
-  <h2>Loading...</h2>
-  <p id="loadText">1%</p>
+  <h2>Loading System...</h2>
+  <p id="loadTxt">1%</p>
 </div>
 
 <!-- CHOICE -->
 <div id="choice" class="page">
-  <h2>Choose</h2>
-  <button onclick="openComment()">COMMENT</button>
+  <h2>ACCESS REQUIRED</h2>
   <button onclick="openFeedback()">FEEDBACK</button>
-</div>
-
-<!-- COMMENT -->
-<div id="comment" class="page">
-  <h2>COMMENT</h2>
-  <input id="c1" placeholder="Comment 1">
-  <input id="c2" placeholder="Comment 2">
-  <button onclick="submitComment()">SUBMIT</button>
+  <button onclick="openComment()">COMMENT</button>
 </div>
 
 <!-- FEEDBACK -->
@@ -60,107 +69,118 @@ input,select,button{
   <button onclick="submitFeedback()">SUBMIT</button>
 </div>
 
-<!-- APP -->
-<div id="app" class="page">
+<!-- COMMENT -->
+<div id="comment" class="page">
+  <h2>COMMENT</h2>
+  <input id="c1" placeholder="Comment 1">
+  <input id="c2" placeholder="Comment 2">
+  <button onclick="submitComment()">SUBMIT</button>
+</div>
 
-  <div id="sidebar">
-    <button onclick="showMain()">Main</button>
-    <button onclick="showHack()">Hack Wifi</button>
-    <button onclick="showSettings()">Settings</button>
-  </div>
-
-  <div id="content">
-
-    <div id="mainPage">
-      <h2>SYSTEM IS READY</h2>
-    </div>
-
-    <div id="hackPage" style="display:none">
-      <h2>HACK WIFI</h2>
-
-      <input id="wifi" placeholder="Enter WiFi Name">
-      <select id="usage">
-        <option value="">Select Network Usage</option>
-        <option>Detect Automatically</option>
-        <option>Treat as Metered</option>
-        <option>Treat as Unmetered</option>
-      </select>
-      <select id="auto">
-        <option value="">Auto Connect</option>
-        <option>ON</option>
-        <option>OFF</option>
-      </select>
-
-      <button onclick="startBypass()">BYPASS</button>
-      <div id="terminal"></div>
-    </div>
-
-    <div id="settingsPage" style="display:none">
-      <h2>SETTINGS</h2>
-      <select><option>FPS</option><option>30</option><option>60</option><option>120</option><option>240</option></select>
-      <select><option>Graphics</option><option>Low</option><option>High</option><option>Ultra HD 4K</option></select>
-      <select><option>Smooth</option><option>ON</option><option>OFF</option></select>
-      <select><option>Effects</option><option>Low</option><option>Super High</option></select>
-    </div>
-
-  </div>
+<!-- HACK WIFI -->
+<div id="hack" class="page">
+  <h2>FAKE WIFI HACKING SYSTEM</h2>
+  <div id="terminal"></div>
+  <div class="progress"><div id="bar" class="bar"></div></div>
 </div>
 
 <script>
-/* ================= LOADING ================= */
-let p=1;
-const loadText=document.getElementById("loadText");
-const t=setInterval(()=>{
-  p++; loadText.textContent=p+"%";
-  if(p>=100){clearInterval(t); showPage("choice");}
-},150);
+/* ===== CONFIG ===== */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
 
-/* ================= NAV ================= */
-function showPage(id){
-  document.querySelectorAll(".page").forEach(x=>x.classList.remove("show"));
+/* ===== LOADING ===== */
+let p=1;
+const loadTxt=document.getElementById("loadTxt");
+const loadInt=setInterval(()=>{
+  p++;
+  loadTxt.textContent=p+"%";
+  if(p>=100){
+    clearInterval(loadInt);
+    show("choice");
+  }
+},150); // ~15s
+
+function show(id){
+  document.querySelectorAll(".page").forEach(d=>d.classList.remove("show"));
   document.getElementById(id).classList.add("show");
 }
-function openComment(){showPage("comment")}
-function openFeedback(){showPage("feedback")}
-function enterApp(){showPage("app"); showMain()}
 
-function showMain(){mainPage.style.display="block";hackPage.style.display="none";settingsPage.style.display="none"}
-function showHack(){mainPage.style.display="none";hackPage.style.display="block";settingsPage.style.display="none"}
-function showSettings(){mainPage.style.display="none";hackPage.style.display="none";settingsPage.style.display="block"}
-
-/* ================= SAVE SYSTEM ================= */
-const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
+/* ===== SAVE TO SHEET ===== */
+function submitFeedback(){
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      type:"FEEDBACK",
+      a:f1.value,
+      b:f2.value
+    })
+  }).then(startHack);
+}
 
 function submitComment(){
-  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({type:"COMMENT",a:c1.value,b:c2.value})})
-  .then(()=>enterApp());
+  fetch(SCRIPT_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      type:"COMMENT",
+      a:c1.value,
+      b:c2.value
+    })
+  }).then(startHack);
 }
 
-function submitFeedback(){
-  fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({type:"FEEDBACK",a:f1.value,b:f2.value})})
-  .then(()=>enterApp());
-}
+function openFeedback(){ show("feedback"); }
+function openComment(){ show("comment"); }
 
-/* ================= FAKE BYPASS ================= */
-function startBypass(){
-  if(!wifi.value||!usage.value||!auto.value){
-    navigator.vibrate?.(200);
-    return;
-  }
-  terminal.textContent="";
-  let i=0;
-  const run=setInterval(()=>{
-    terminal.textContent+="[SEARCHING] packet "+Math.random().toString(36).slice(2)+"\n";
-    i++;
-    if(i>25){
-      clearInterval(run);
-      terminal.textContent+="\nSUCCESS!\nPASSWORD: "+genPass();
+/* ===== FAKE HACKING ===== */
+function startHack(){
+  show("hack");
+  const term=document.getElementById("terminal");
+  const bar=document.getElementById("bar");
+  term.textContent="";
+  bar.style.width="0%";
+
+  let t=0;
+  const scan=setInterval(()=>{
+    t++;
+    term.textContent+=
+      "[+] Scanning packets...\n"+
+      "[+] Injecting handshake...\n"+
+      "[+] Bypassing firewall...\n";
+    term.scrollTop=term.scrollHeight;
+    bar.style.width=(t*2)+"%";
+
+    if(t>=25){ // 15s
+      clearInterval(scan);
+      wifiType();
     }
   },600);
 }
-function genPass(){
-  return Math.floor(10000000+Math.random()*90000000)+
-         Math.random().toString(36).slice(2,5).toUpperCase();
+
+function wifiType(){
+  const term=document.getElementById("terminal");
+  term.textContent+="\nWIFI DETECTED\nTYPE?\nPRIVATE / PUBLIC\n\n";
+  setTimeout(finalHack,1000);
+}
+
+function finalHack(){
+  const term=document.getElementById("terminal");
+  const bar=document.getElementById("bar");
+  let t=0;
+  const run=setInterval(()=>{
+    t++;
+    term.textContent+="[+] Cracking encryption...\n";
+    term.scrollTop=term.scrollHeight;
+    bar.style.width=(50+t*2)+"%";
+
+    if(t>=20){
+      clearInterval(run);
+      const pass =
+        Math.floor(10000000+Math.random()*90000000)+
+        Math.random().toString(36).substring(2,5).toUpperCase();
+      term.textContent+="\nSUCCESS!\nPASSWORD: "+pass+"\n";
+      bar.style.width="100%";
+    }
+  },600);
 }
 </script>
 
