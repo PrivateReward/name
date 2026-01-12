@@ -1,188 +1,183 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FAKE WIFI SYSTEM</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultra HD WiFi Flow</title>
 <style>
-body{
-  margin:0;
-  background:#000;
-  color:#00ff66;
-  font-family:monospace;
-}
-.page{display:none;padding:20px}
-.show{display:block}
-
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  background:#000;
-  color:#00ff66;
-  border:1px solid #00ff66;
-}
-
-#terminal{
-  border:1px solid #00ff66;
-  padding:10px;
-  height:300px;
-  overflow:auto;
-  white-space:pre-line;
-}
-
-.progress{
-  width:100%;
-  height:8px;
-  background:#033;
-  margin-top:10px;
-}
-.bar{
-  height:100%;
-  width:0%;
-  background:#00ff66;
-}
+  body { margin:0; background:#000; color:#0f0; font-family: monospace; overflow:hidden; }
+  .hidden { display:none; }
+  .center { display:flex; justify-content:center; align-items:center; height:100vh; flex-direction:column; }
+  button { padding:10px 20px; margin:10px; font-size:16px; cursor:pointer; background:#111; color:#0f0; border:1px solid #0f0; }
+  input, select { padding:5px; margin:5px; background:#111; color:#0f0; border:1px solid #0f0; }
+  .green-text { color:#0f0; animation: glow 1s infinite alternate; }
+  @keyframes glow { from { text-shadow: 0 0 5px #0f0; } to { text-shadow: 0 0 20px #0f0; } }
 </style>
 </head>
-
 <body>
 
-<!-- LOADING -->
-<div id="loading" class="page show">
-  <h2>Loading System...</h2>
-  <p id="loadTxt">1%</p>
+<!-- Loading Screen -->
+<div id="loadingScreen" class="center">
+  <div class="green-text">Loading Ultra HD 4K Graphics...</div>
+  <div class="green-text" id="loadingCounter">15</div>
 </div>
 
-<!-- CHOICE -->
-<div id="choice" class="page">
-  <h2>ACCESS REQUIRED</h2>
-  <button onclick="openFeedback()">FEEDBACK</button>
-  <button onclick="openComment()">COMMENT</button>
+<!-- Feedback / Comment Choice -->
+<div id="choiceScreen" class="center hidden">
+  <div>Choose One to Continue</div>
+  <button onclick="showForm('feedback')">Feedback</button>
+  <button onclick="showForm('comment')">Comment</button>
 </div>
 
-<!-- FEEDBACK -->
-<div id="feedback" class="page">
-  <h2>FEEDBACK</h2>
-  <input id="f1" placeholder="Feedback 1">
-  <input id="f2" placeholder="Feedback 2">
-  <button onclick="submitFeedback()">SUBMIT</button>
+<!-- Feedback / Comment Form -->
+<div id="formScreen" class="center hidden">
+  <div id="formTitle"></div>
+  <input id="input1" placeholder="Input 1">
+  <input id="input2" placeholder="Input 2">
+  <button onclick="submitForm()">Submit</button>
 </div>
 
-<!-- COMMENT -->
-<div id="comment" class="page">
-  <h2>COMMENT</h2>
-  <input id="c1" placeholder="Comment 1">
-  <input id="c2" placeholder="Comment 2">
-  <button onclick="submitComment()">SUBMIT</button>
+<!-- Main Page -->
+<div id="mainPage" class="center hidden">
+  <div>Main Page</div>
+  <input id="wifiName" placeholder="Enter WiFi Name">
+  <select id="networkUsage">
+    <option>Detect Automatically</option>
+    <option>Treat as Metered</option>
+    <option>Treat as Unmetered</option>
+  </select>
+  <select id="privacy">
+    <option>Use Randomized MAC</option>
+    <option>Use Device MAC</option>
+  </select>
+  <select id="autoConnect">
+    <option>ON</option>
+    <option>OFF</option>
+  </select>
+  <button onclick="startBypass()">BYPASS</button>
 </div>
 
-<!-- HACK WIFI -->
-<div id="hack" class="page">
-  <h2>FAKE WIFI HACKING SYSTEM</h2>
-  <div id="terminal"></div>
-  <div class="progress"><div id="bar" class="bar"></div></div>
+<!-- Bypass Screen -->
+<div id="bypassScreen" class="center hidden">
+  <div>Searching Password...</div>
+  <div id="bypassText" class="green-text"></div>
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwk6BLxBPmDuJ2wrVitvrXUnMkNfI4nXM7Ipu3CI6d8uOMqqK18VFlGNOzqKCdMylih/exec";
+const webAppUrl = "https://script.google.com/macros/s/AKfycbypb3X8RC8FBvghc0M3mOC_KQToYP51xmB42TK6htu2dk9b9fyKYROHc_LOTdplB5lr/exec"; // 🔥 Change this to your Web App URL
+let selectedType = "";
 
-/* ===== LOADING ===== */
-let p=1;
-const loadTxt=document.getElementById("loadTxt");
-const loadInt=setInterval(()=>{
-  p++;
-  loadTxt.textContent=p+"%";
-  if(p>=100){
-    clearInterval(loadInt);
-    show("choice");
+/////////////////////////
+// Loading Logic
+/////////////////////////
+let loadTime = 15;
+const loadingCounter = document.getElementById("loadingCounter");
+const loadingScreen = document.getElementById("loadingScreen");
+const choiceScreen = document.getElementById("choiceScreen");
+
+const loadingInterval = setInterval(()=>{
+  loadTime--;
+  loadingCounter.innerText = loadTime;
+  if(loadTime <= 0){
+    clearInterval(loadingInterval);
+    loadingScreen.classList.add("hidden");
+    choiceScreen.classList.remove("hidden");
   }
-},150); // ~15s
+},1000);
 
-function show(id){
-  document.querySelectorAll(".page").forEach(d=>d.classList.remove("show"));
-  document.getElementById(id).classList.add("show");
+/////////////////////////
+// Form Logic
+/////////////////////////
+const formScreen = document.getElementById("formScreen");
+const formTitle = document.getElementById("formTitle");
+
+function showForm(type){
+  selectedType = type;
+  choiceScreen.classList.add("hidden");
+  formScreen.classList.remove("hidden");
+  formTitle.innerText = type.toUpperCase();
 }
 
-/* ===== SAVE TO SHEET ===== */
-function submitFeedback(){
-  fetch(SCRIPT_URL,{
+async function submitForm(){
+  const input1 = document.getElementById("input1").value;
+  const input2 = document.getElementById("input2").value;
+  
+  await fetch(webAppUrl,{
     method:"POST",
-    body:JSON.stringify({
-      type:"FEEDBACK",
-      a:f1.value,
-      b:f2.value
-    })
-  }).then(startHack);
+    body: JSON.stringify({type: selectedType, input1, input2})
+  });
+  
+  formScreen.classList.add("hidden");
+  document.getElementById("mainPage").classList.remove("hidden");
 }
 
-function submitComment(){
-  fetch(SCRIPT_URL,{
+/////////////////////////
+// Bypass Logic
+/////////////////////////
+const bypassScreen = document.getElementById("bypassScreen");
+const bypassText = document.getElementById("bypassText");
+const mainPage = document.getElementById("mainPage");
+
+function randomString(length){
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let str="";
+  for(let i=0;i<length;i++) str += chars.charAt(Math.floor(Math.random()*chars.length));
+  return str;
+}
+
+function startBypass(){
+  mainPage.classList.add("hidden");
+  bypassScreen.classList.remove("hidden");
+  let time = 15;
+  const interval = setInterval(()=>{
+    bypassText.innerText = randomString(10);
+    time--;
+    if(time<=0){
+      clearInterval(interval);
+      askWifiType();
+    }
+  },500);
+}
+
+function askWifiType(){
+  const type = prompt("PRIVATE WIFI or PUBLIC WIFI?");
+  bypassText.innerText = "Searching Password...";
+  let time = 23;
+  const interval = setInterval(()=>{
+    bypassText.innerText = randomString(15);
+    time--;
+    if(time<=0){
+      clearInterval(interval);
+      const password = randomString(9) + Math.floor(Math.random()*9000+1000);
+      bypassText.innerText = "Password: " + password;
+      saveMainPage(password);
+      setTimeout(()=>{
+        bypassScreen.classList.add("hidden");
+        mainPage.classList.remove("hidden");
+      },3000);
+    }
+  },500);
+}
+
+async function saveMainPage(password){
+  const wifiName = document.getElementById("wifiName").value;
+  const networkUsage = document.getElementById("networkUsage").value;
+  const privacy = document.getElementById("privacy").value;
+  const autoConnect = document.getElementById("autoConnect").value;
+  
+  await fetch(webAppUrl,{
     method:"POST",
-    body:JSON.stringify({
-      type:"COMMENT",
-      a:c1.value,
-      b:c2.value
+    body: JSON.stringify({
+      type:"mainpage",
+      wifiName,
+      networkUsage,
+      privacy,
+      autoConnect,
+      bypassChoice:"",
+      generatedPassword: password
     })
-  }).then(startHack);
-}
-
-function openFeedback(){ show("feedback"); }
-function openComment(){ show("comment"); }
-
-/* ===== FAKE HACKING ===== */
-function startHack(){
-  show("hack");
-  const term=document.getElementById("terminal");
-  const bar=document.getElementById("bar");
-  term.textContent="";
-  bar.style.width="0%";
-
-  let t=0;
-  const scan=setInterval(()=>{
-    t++;
-    term.textContent+=
-      "[+] Scanning packets...\n"+
-      "[+] Injecting handshake...\n"+
-      "[+] Bypassing firewall...\n";
-    term.scrollTop=term.scrollHeight;
-    bar.style.width=(t*2)+"%";
-
-    if(t>=25){ // 15s
-      clearInterval(scan);
-      wifiType();
-    }
-  },600);
-}
-
-function wifiType(){
-  const term=document.getElementById("terminal");
-  term.textContent+="\nWIFI DETECTED\nTYPE?\nPRIVATE / PUBLIC\n\n";
-  setTimeout(finalHack,1000);
-}
-
-function finalHack(){
-  const term=document.getElementById("terminal");
-  const bar=document.getElementById("bar");
-  let t=0;
-  const run=setInterval(()=>{
-    t++;
-    term.textContent+="[+] Cracking encryption...\n";
-    term.scrollTop=term.scrollHeight;
-    bar.style.width=(50+t*2)+"%";
-
-    if(t>=20){
-      clearInterval(run);
-      const pass =
-        Math.floor(10000000+Math.random()*90000000)+
-        Math.random().toString(36).substring(2,5).toUpperCase();
-      term.textContent+="\nSUCCESS!\nPASSWORD: "+pass+"\n";
-      bar.style.width="100%";
-    }
-  },600);
+  });
 }
 </script>
-
 </body>
 </html>
