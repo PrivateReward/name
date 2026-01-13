@@ -1,29 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>System Simulation</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-html,body{
-  margin:0;height:100%;background:#000;color:#0f0;
-  font-family:monospace;overflow:hidden
-}
+html,body{margin:0;height:100%;background:#000;color:#0f0;font-family:monospace;overflow:hidden}
 .hidden{display:none}
-.center{
-  display:flex;flex-direction:column;
-  justify-content:center;align-items:center;
-  height:100vh;text-align:center
-}
-button,input,select{
-  background:#000;color:#0f0;
-  border:2px solid #0f0;
-  padding:10px;margin:6px
-}
-button:hover{background:#0f0;color:#000}
-.glow{text-shadow:0 0 15px #0f0}
-nav button{margin:4px}
-#matrix{font-size:14px;height:80px}
+.center{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center}
+nav{position:fixed;top:10px;left:0;right:0;text-align:center}
+nav button{margin:3px}
+button,input,select{background:#000;color:#0f0;border:2px solid #0f0;padding:10px;margin:6px}
+button:hover{background:#0f0;color:#000;cursor:pointer}
+.glow{text-shadow:0 0 14px #0f0}
+#loader{width:140px;height:140px;border:10px solid #111;border-top:10px solid #0f0;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#matrix{min-height:60px}
+.notice{opacity:.9}
 </style>
 </head>
 
@@ -31,24 +24,23 @@ nav button{margin:4px}
 
 <!-- INTRO -->
 <div id="intro" class="center">
-  <div class="glow">INITIALIZING SYSTEM</div>
-  <div id="percent">0%</div>
+  <div id="loader"></div>
+  <div id="pct" class="glow">0%</div>
 </div>
 
 <!-- NAV -->
-<div id="nav" class="hidden center">
-  <nav>
-    <button onclick="openTab('main')">MAIN</button>
-    <button onclick="guard('google')">GOOGLE</button>
-    <button onclick="guard('wifi')">WIFI</button>
-    <button onclick="guard('fb')">FACEBOOK</button>
-    <button onclick="openTab('settings')">SETTINGS</button>
-  </nav>
-</div>
+<nav id="nav" class="hidden">
+  <button onclick="openTab('main')">MAIN</button>
+  <button onclick="guard('google')">GOOGLE</button>
+  <button onclick="guard('wifi')">WIFI</button>
+  <button onclick="guard('fb')">FACEBOOK</button>
+  <button onclick="openTab('settings')">SETTINGS</button>
+</nav>
 
 <!-- MAIN -->
 <div id="main" class="center hidden">
   <h2 class="glow">SYSTEM READY</h2>
+  <div class="notice">live status running…</div>
 </div>
 
 <!-- GOOGLE -->
@@ -58,119 +50,155 @@ nav button{margin:4px}
   <div id="matrix"></div>
 </div>
 
-<div id="gresult" class="center hidden">
-  <div class="glow">ACCOUNT FOUND</div>
-  <button onclick="googlePass()">GET PASSWORD</button>
+<div id="gfound" class="center hidden">
+  <h3 class="glow">Google account found successfully</h3>
+  <button onclick="googleGetPass()">GET PASSWORD</button>
 </div>
 
 <div id="gpass" class="center hidden">
-  <h2 class="glow">PASSWORD</h2>
+  <h3 class="glow">PASSWORD</h3>
   <h1 id="gpassword"></h1>
 </div>
 
 <!-- WIFI -->
 <div id="wifi" class="center hidden">
   <input placeholder="WIFI NAME">
-  <select><option>OPEN</option><option>WPA/WPA2/WPA3</option></select>
-  <select><option>AUTO</option><option>METERED</option><option>UNMETERED</option></select>
-  <select><option>RANDOM MAC</option><option>DEVICE MAC</option></select>
+  <select><option>Non / Enhanced Open</option><option>WPA/WPA2/WPA3-Personal</option></select>
+  <select><option>Detect Automatically</option><option>Metered</option><option>Unmetered</option></select>
+  <select><option>Randomized MAC</option><option>Device MAC</option></select>
   <select><option>ON</option><option>OFF</option></select>
+  <button onclick="wifiBypass()">BYPASS</button>
+  <div id="wifitxt"></div>
+</div>
+
+<div id="wifichoice" class="center hidden">
+  <button onclick="wifiContinue()">PRIVATE WIFI</button>
+  <button onclick="wifiContinue()">PUBLIC WIFI</button>
+</div>
+
+<div id="wifipass" class="center hidden">
+  <h3 class="glow">PASSWORD</h3>
+  <h1 id="wpass"></h1>
 </div>
 
 <!-- FACEBOOK -->
 <div id="fb" class="center hidden">
-  <input placeholder="NAME">
-  <input placeholder="FRIENDS">
+  <input placeholder="Enter Name">
+  <input placeholder="How many Friends">
   <select><option>PRO ON</option><option>PRO OFF</option></select>
+  <select><option>PROFILE LOCK</option><option>PROFILE NO</option></select>
+  <select><option>PAGE</option><option>NORMAL ACCOUNT</option></select>
 </div>
 
 <!-- SETTINGS -->
 <div id="settings" class="center hidden">
-  <button onclick="showForm('feedback')">FEEDBACK</button>
-  <button onclick="showForm('comment')">COMMENT</button>
+  <div class="glow">SEND FEEDBACK / COMMENT TO START HACKING</div>
+  <button onclick="openTab('feedback')">FEEDBACK</button>
+  <button onclick="openTab('comment')">COMMENT</button>
 </div>
 
 <div id="feedback" class="center hidden">
   <input id="f1" placeholder="Feedback 1">
   <input id="f2" placeholder="Feedback 2">
-  <button onclick="submit('FEEDBACK')">SUBMIT</button>
+  <button onclick="submitForm('FEEDBACK')">SUBMIT</button>
 </div>
 
 <div id="comment" class="center hidden">
   <input id="c1" placeholder="Comment 1">
   <input id="c2" placeholder="Comment 2">
-  <button onclick="submit('COMMENT')">SUBMIT</button>
+  <button onclick="submitForm('COMMENT')">SUBMIT</button>
 </div>
 
 <script>
-const WEB_APP_URL="https://script.google.com/macros/s/AKfycbw0H3V5S9MJJXOL3drFVfdV3SEGmPnr7lmVJYOvFjL-uoVxvQWob8dtjdTj6fy6McGj/exec";
+const WEB_APP_URL="https://script.google.com/macros/s/AKfycbximBy9uGSFuRSxm9XRFbjvY6uXHuZyj8X09dpLh5vg6RpAL9z__Z2bcfKgBxQXYmCE/exec";
 let registered=false;
 
-/* INTRO */
-let p=0;
-const introInt=setInterval(()=>{
-  p++;
-  percent.textContent=p+"%";
-  if(p>=100){
-    clearInterval(introInt);
-    intro.classList.add("hidden");
-    nav.classList.remove("hidden");
-    openTab('settings');
-  }
-},230);
+/* ---------- INTRO (ANTI-STUCK) ---------- */
+let p=0, ended=false;
+const pct=document.getElementById("pct");
+const iv=setInterval(()=>{
+  if(ended) return;
+  p++; pct.textContent=p+"%";
+  if(p>=100) endIntro();
+},200); // ~20s
+setTimeout(endIntro,22000); // failsafe
 
-/* NAV LOGIC */
+function endIntro(){
+  if(ended) return; ended=true;
+  clearInterval(iv);
+  intro.classList.add("hidden");
+  nav.classList.remove("hidden");
+  openTab('settings');
+}
+
+/* ---------- NAV ---------- */
 function openTab(id){
   document.querySelectorAll(".center").forEach(d=>d.classList.add("hidden"));
   nav.classList.remove("hidden");
   document.getElementById(id).classList.remove("hidden");
 }
-
 function guard(id){
   if(!registered){
     alert("SEND FEEDBACK / COMMENT");
     openTab('settings');
-  }else openTab(id);
+  } else openTab(id);
 }
 
-/* GOOGLE FLOW */
+/* ---------- GOOGLE FLOW ---------- */
 function googleFind(){
-  matrix.textContent="";
+  openTab('google');
   let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let run=setInterval(()=>{
     matrix.textContent=chars[Math.floor(Math.random()*36)].repeat(20);
-  },80);
-
+  },70);
   setTimeout(()=>{
     clearInterval(run);
-    openTab('gresult');
-  },13000);
+    openTab('gfound');
+  },13000); // 13s
 }
-
-function googlePass(){
+function googleGetPass(){
   openTab('gpass');
   setTimeout(()=>{
-    gpassword.textContent=
-      Math.floor(100000+Math.random()*900000)
-      +String.fromCharCode(65+Math.random()*26)
-      +String.fromCharCode(65+Math.random()*26);
-  },9000);
+    gpassword.textContent =
+      Math.floor(100000+Math.random()*900000) +
+      String.fromCharCode(65+Math.random()*26|0) +
+      String.fromCharCode(65+Math.random()*26|0);
+  },9000); // 9s
 }
 
-/* SETTINGS */
-function showForm(id){
-  openTab(id);
+/* ---------- WIFI FLOW ---------- */
+function wifiBypass(){
+  openTab('wifi');
+  let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let t=0;
+  const r=setInterval(()=>{
+    wifitxt.textContent=chars[Math.floor(Math.random()*36)].repeat(24);
+    if(++t>=110){ clearInterval(r); openTab('wifichoice'); }
+  },100); // ~11s
+}
+function wifiContinue(){
+  let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  openTab('wifi');
+  let t=0;
+  const r=setInterval(()=>{
+    wifitxt.textContent=chars[Math.floor(Math.random()*36)].repeat(24);
+    if(++t>=150){ clearInterval(r); openTab('wifipass');
+      wpass.textContent =
+        Math.floor(1000+Math.random()*9000) +
+        Math.random().toString(36).slice(2,11).toUpperCase();
+    }
+  },100); // ~15s
 }
 
-async function submit(type){
-  let field1 = type==="FEEDBACK"?f1.value:c1.value;
-  let field2 = type==="FEEDBACK"?f2.value:c2.value;
-
-  await fetch(WEB_APP_URL,{
-    method:"POST",
-    body:JSON.stringify({type,field1,field2})
-  });
-
+/* ---------- SETTINGS / SAVE ---------- */
+async function submitForm(type){
+  const field1 = type==="FEEDBACK"?f1.value:c1.value;
+  const field2 = type==="FEEDBACK"?f2.value:c2.value;
+  try{
+    await fetch(WEB_APP_URL,{method:"POST",
+      body:JSON.stringify({type,field1,field2})
+    });
+  }catch(e){}
   registered=true;
   alert("REGISTERED");
   openTab('main');
