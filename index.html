@@ -2,161 +2,138 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Fun Game Portal</title>
+<title>Math Game + Redeem</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-html,body{margin:0;padding:0;height:100%;font-family:sans-serif;overflow:hidden;background:#1a1a2e;color:#fff;}
-body{display:flex;flex-direction:column;}
-.topbar{display:flex;justify-content:space-around;align-items:center;background:#162447;padding:10px;position:sticky;top:0;z-index:100;}
-.topbar button{background:#1f4068;color:#fff;border:2px solid #fff;padding:8px 12px;font-size:16px;cursor:pointer;border-radius:6px;}
-.topbar button:disabled{opacity:0.3;cursor:default;}
-.topbar span{font-weight:bold;}
-.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 50px);text-align:center;padding:20px;transition:all 0.5s;}
+html,body{margin:0;padding:0;height:100%;font-family:monospace;background:#111;color:#0f0;overflow:hidden;}
 .hidden{display:none;}
-input,button,select{padding:8px;margin:5px;background:#0f3460;color:#fff;border:2px solid #fff;font-size:16px;border-radius:6px;}
-button:hover:not(:disabled){background:#e94560;color:#fff;transition:0.3s;}
-.glow{animation:glow 1s alternate infinite;text-shadow:0 0 10px #fff,0 0 20px #fff;}
-@keyframes glow{from{opacity:.6} to{opacity:1}}
-/* Background particles */
-#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
+.center{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;}
+button,input,select{margin:5px;padding:10px;font-size:16px;background:#222;color:#0f0;border:2px solid #0f0;}
+button:hover{background:#0f0;color:#000;cursor:pointer;}
+.glow{text-shadow:0 0 10px #0f0,0 0 30px #0f0;animation:glow 1s alternate infinite;}
+@keyframes glow{from{opacity:.6}to{opacity:1}}
+.sidebar{position:fixed;top:0;left:0;width:100%;background:#000;color:#0f0;display:flex;justify-content:space-around;padding:10px;z-index:100;}
+.coins-display{position:fixed;top:50px;right:20px;font-size:18px;}
 </style>
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
+<div class="sidebar">
+  <button id="btnMain">MAIN</button>
+  <button id="btnGame" disabled>GAME</button>
+  <button id="btnRedeem" disabled>REDEEM</button>
+</div>
+<div class="coins-display">COINS: <span id="coins">0</span></div>
 
-<!-- TOPBAR -->
-<div class="topbar">
-  <button id="btnMain" onclick="showPage('mainPage')">Main</button>
-  <select id="gameSelector" onchange="selectGame()" disabled>
-    <option value="">Select Game</option>
-    <option value="math">Math Game</option>
-    <option value="guess">Guess Number</option>
-  </select>
-  <button id="btnRedeem" onclick="showPage('redeemPage')" disabled>Redeem</button>
-  <span>COINS: <span id="coinsCounter">0</span></span>
+<!-- INTRO LOADING -->
+<div id="intro" class="center">
+  <div class="glow">Loading Super Smooth Graphics...</div>
+  <div id="percent" class="glow">0%</div>
 </div>
 
-<!-- MAIN -->
-<div id="mainPage" class="center">
-  <h1 class="glow">WELCOME TO GAME PORTAL</h1>
-  <div id="commentSection">
-    <h3>Submit Comment to Unlock Games & Redeem</h3>
-    <input id="c1" placeholder="Comment 1">
-    <input id="c2" placeholder="Comment 2">
-    <button onclick="submitComment()">Submit</button>
-  </div>
+<!-- MAIN PAGE -->
+<div id="mainPage" class="center hidden">
+  <h1 class="glow">SEND COMMENT TO UNLOCK GAME</h1>
+  <input placeholder="Comment 1" id="c1">
+  <input placeholder="Comment 2" id="c2">
+  <button onclick="submitComment()">SUBMIT</button>
 </div>
 
 <!-- GAME -->
 <div id="gamePage" class="center hidden">
-  <h2 id="gameTitle"></h2>
-  <div id="gameArea">
-    <h3 id="question"></h3>
-    <input id="answer" placeholder="Your Answer">
-    <button onclick="submitAnswer()">Submit</button>
-  </div>
-  <button onclick="showPage('mainPage')">Back</button>
+  <h2>Math Game</h2>
+  <div id="gameQuestion" class="glow"></div>
+  <input id="gameAnswer" placeholder="Your Answer">
+  <button onclick="submitAnswer()">Submit Answer</button>
 </div>
 
 <!-- REDEEM -->
 <div id="redeemPage" class="center hidden">
-  <h3>Redeem Options</h3>
-  <button onclick="redeem(600,60)">600 → 60</button>
-  <button onclick="redeem(1000,100)">1000 → 100</button>
-  <button onclick="redeem(2000,200)">2000 → 200</button>
-  <button onclick="redeem(50000,5000)">50000 → 5000</button>
-
+  <h2>Redeem Coins</h2>
+  <p>Your Coins: <span id="coinsRedeem">0</span></p>
+  <button onclick="redeem(600,60)">Redeem 600 = 60</button>
+  <button onclick="redeem(1000,100)">Redeem 1000 = 100</button>
+  <button onclick="redeem(2000,200)">Redeem 2000 = 200</button>
+  <button onclick="redeem(50000,5000)">Redeem 50000 = 5000</button>
   <div id="feedbackRedeem" class="hidden">
-    <h3>Feedback for Redeem</h3>
-    <input id="f1" placeholder="Feedback1">
-    <input id="f2" placeholder="Feedback2">
-    <button onclick="submitFeedback()">Submit</button>
+    <input id="f1" placeholder="Feedback 1">
+    <input id="f2" placeholder="Feedback 2">
+    <button onclick="submitFeedback()">SUBMIT</button>
   </div>
-
-  <div id="redeemSuccess" class="hidden">
-    <h2>REDEEM SUCCESSFULLY ✅</h2>
-  </div>
-
-  <button onclick="showPage('mainPage')">Back</button>
+  <div id="redeemSuccess" class="hidden glow">✅ REDEEM SUCCESSFULLY!</div>
 </div>
 
 <script>
 const webAppUrl="https://script.google.com/macros/s/AKfycbwbgXlhCkMZ4x5I43qqcbOIOA-pegFs1Uxu5q1dGz737_yZMa4zcfa4S7IQsE4QTRU/exec";
-let registered=false;
-let coins=0;
-let currentAnswer=0;
-let currentGame="";
 
-/* ===== Page Switch ===== */
-function showPage(id){
-  document.querySelectorAll('.center').forEach(d=>d.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  document.getElementById('coinsCounter').textContent = coins;
+let percent=0;
+let coins=0;
+let registered=false;
+
+// ---------- INTRO ----------
+const introInterval=setInterval(()=>{
+  percent++;
+  document.getElementById('percent').innerText=percent+"%";
+  if(percent>=100){endIntro();}
+},230);
+setTimeout(endIntro,23500);
+
+function endIntro(){
+  clearInterval(introInterval);
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('mainPage').classList.remove('hidden');
 }
 
-/* ===== Submit Comment ===== */
+// ---------- COMMENT SUBMIT ----------
 async function submitComment(){
   const c1=document.getElementById('c1').value;
   const c2=document.getElementById('c2').value;
-  if(!c1||!c2){alert("Fill both fields"); return;}
+  if(!c1||!c2){alert("Fill both fields!"); return;}
 
-  try{
-    await fetch(webAppUrl,{method:'POST',body:JSON.stringify({type:'comment',field1:c1,field2:c2})});
-  }catch(e){console.log(e);}
-
+  // Unlock buttons immediately
   registered=true;
-  document.getElementById('gameSelector').disabled=false;
+  document.getElementById('btnGame').disabled=false;
   document.getElementById('btnRedeem').disabled=false;
-  showPage('mainPage');
+
+  // Save to Sheet
+  try{
+    await fetch(webAppUrl,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({type:'comment',field1:c1,field2:c2})
+    });
+  }catch(e){console.log(e);}
 }
 
-/* ===== Game Selection ===== */
-function selectGame(){
-  currentGame=document.getElementById('gameSelector').value;
-  if(currentGame){
-    document.getElementById('gameTitle').textContent=currentGame==="math"?"Math Game":"Guess the Number";
-    showPage('gamePage');
-    if(currentGame==="math") generateMathQuestion();
-    else generateGuessNumber();
-  }
-}
-
-/* ===== Math Game ===== */
-function generateMathQuestion(){
-  const type=Math.floor(Math.random()*4);
-  let q='',ans=0;
-  switch(type){
-    case 0: const a1=Math.floor(Math.random()*90)+10; const a2=Math.floor(Math.random()*90)+10; q=`${a1} + ${a2}`; ans=a1+a2; break;
-    case 1: const b1=Math.floor(Math.random()*900)+100; const b2=Math.floor(Math.random()*900)+100; q=`${b1} - ${b2}`; ans=b1-b2; break;
-    case 2: const c1=Math.floor(Math.random()*90)+10; const c2=Math.floor(Math.random()*90)+10; q=`${c1} × ${c2}`; ans=c1*c2; break;
-    case 3: const d1=Math.floor(Math.random()*900)+100; q=`${d1} ÷ 1`; ans=d1; break;
-  }
-  currentAnswer=ans;
-  document.getElementById('question').textContent=q;
-  document.getElementById('answer').value='';
+// ---------- GAME ----------
+let currentAnswer=0;
+function newQuestion(){
+  const types=['+','-','×','÷'];
+  const type=types[Math.floor(Math.random()*types.length)];
+  let a,b,question;
+  if(type==='+'){a=Math.floor(Math.random()*90+10);b=Math.floor(Math.random()*90+10);currentAnswer=a+b;question=`${a} + ${b} = ?`;}
+  if(type==='-'){a=Math.floor(Math.random()*900+100);b=Math.floor(Math.random()*900+100);currentAnswer=a-b;question=`${a} - ${b} = ?`;}
+  if(type==='×'){a=Math.floor(Math.random()*90+10);b=Math.floor(Math.random()*90+10);currentAnswer=a*b;question=`${a} × ${b} = ?`;}
+  if(type==='÷'){b=Math.floor(Math.random()*9+1);a=b*(Math.floor(Math.random()*9+1));currentAnswer=a/b;question=`${a} ÷ ${b} = ?`;}
+  document.getElementById('gameQuestion').innerText=question;
 }
 
 function submitAnswer(){
-  const user=parseInt(document.getElementById('answer').value);
-  if(user===currentAnswer) coins+=40; else coins-=3;
-  document.getElementById('coinsCounter').textContent=coins;
-  if(currentGame==="math") generateMathQuestion();
-  else generateGuessNumber();
+  const ans=Number(document.getElementById('gameAnswer').value);
+  if(ans===currentAnswer){coins+=40;}else{coins-=3;}
+  document.getElementById('coins').innerText=coins;
+  document.getElementById('gameAnswer').value='';
+  newQuestion();
 }
 
-/* ===== Guess Number Game ===== */
-function generateGuessNumber(){
-  currentAnswer=Math.floor(Math.random()*100)+1;
-  document.getElementById('question').textContent="Guess a number between 1-100";
-  document.getElementById('answer').value='';
-}
-
-/* ===== REDEEM ===== */
-function redeem(req,val){
-  if(coins<req){alert("Not enough coins"); return;}
-  coins-=req;
-  document.getElementById('coinsCounter').textContent=coins;
+// ---------- REDEEM ----------
+function redeem(coinNeed,redeemValue){
+  if(coins<coinNeed){alert("Not enough coins!"); return;}
+  coins-=coinNeed;
+  document.getElementById('coins').innerText=coins;
+  document.getElementById('coinsRedeem').innerText=coins;
   document.getElementById('feedbackRedeem').classList.remove('hidden');
 }
 
@@ -165,38 +142,36 @@ async function submitFeedback(){
   const f2=document.getElementById('f2').value;
   if(!f1||!f2){alert("Fill both fields"); return;}
 
-  try{
-    await fetch(webAppUrl,{method:'POST',body:JSON.stringify({type:'feedback',field1:f1,field2:f2})});
-  }catch(e){console.log(e);}
-
   document.getElementById('feedbackRedeem').classList.add('hidden');
   document.getElementById('redeemSuccess').classList.remove('hidden');
+
+  try{
+    await fetch(webAppUrl,{
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({type:'redeem',field1:f1,field2:f2})
+    });
+  }catch(e){console.log(e);}
 }
 
-/* ===== Background Particles ===== */
-const canvas=document.getElementById('bgCanvas');
-const ctx=canvas.getContext('2d');
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-let particles=[];
-for(let i=0;i<100;i++){
-  particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*3+1,speed:Math.random()*1+0.2}));
+// ---------- NAVIGATION ----------
+document.getElementById('btnMain').addEventListener('click',()=>showPage('mainPage'));
+document.getElementById('btnGame').addEventListener('click',()=>{
+  if(!registered){alert("Submit Comment first!"); return;}
+  showPage('gamePage');
+  newQuestion();
+});
+document.getElementById('btnRedeem').addEventListener('click',()=>{
+  if(!registered){alert("Submit Comment first!"); return;}
+  showPage('redeemPage');
+  document.getElementById('coinsRedeem').innerText=coins;
+});
+
+function showPage(id){
+  ['mainPage','gamePage','redeemPage'].forEach(p=>document.getElementById(p).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
 }
-function animateParticles(){
-  ctx.fillStyle='rgba(26,26,46,0.3)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle='#e94560';
-  particles.forEach(p=>{
-    ctx.beginPath();
-    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    ctx.fill();
-    p.y-=p.speed;
-    if(p.y<0)p.y=canvas.height;
-  });
-  requestAnimationFrame(animateParticles);
-}
-animateParticles();
-window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
 </script>
 
 </body>
