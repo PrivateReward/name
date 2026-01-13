@@ -1,118 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Settings Registration Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Main Menu</title>
+
 <style>
-body{background:#000;color:#0f0;font-family:monospace;text-align:center;}
-button{margin:5px;padding:10px;border:2px solid #0f0;background:#000;color:#0f0;cursor:pointer;}
-button:disabled{opacity:.3;cursor:default;}
-input{margin:5px;padding:8px;background:#000;color:#0f0;border:1px solid #0f0;}
-.hidden{display:none;}
-.glow{text-shadow:0 0 10px #0f0,0 0 30px #0f0;}
+body {
+  background:#000;
+  color:#0f0;
+  font-family: monospace;
+  text-align:center;
+}
+h1 {
+  text-shadow:0 0 15px #0f0;
+}
+.menu button {
+  border:2px solid #0f0;
+  background:#000;
+  color:#0f0;
+  padding:10px 15px;
+  margin:5px;
+}
+.hidden { display:none; }
+
+.box {
+  border:1px solid #0f0;
+  padding:15px;
+  margin:10px auto;
+  width:90%;
+  max-width:400px;
+}
+input, textarea {
+  width:100%;
+  margin:5px 0;
+  padding:10px;
+  background:#111;
+  color:#0f0;
+  border:1px solid #0f0;
+}
 </style>
 </head>
+
 <body>
 
-<h1 class="glow">MAIN MENU</h1>
-<nav>
-  <button id="btnMain">MAIN</button>
-  <button id="btnFacebook" disabled>FACEBOOK</button>
-  <button id="btnWifi" disabled>WIFI</button>
-  <button id="btnSettings">SETTINGS</button>
-</nav>
+<h1>MAIN MENU</h1>
 
-<!-- SETTINGS -->
-<div id="settingsDiv" class="hidden">
-  <h2>Register to Unlock Features</h2>
-  <button onclick="choose('comment')">COMMENT</button>
-  <button onclick="choose('feedback')">FEEDBACK</button>
-
-  <div id="commentDiv" class="hidden">
-    <input id="comment1" placeholder="Comment 1">
-    <input id="comment2" placeholder="Comment 2">
-    <button onclick="submitData('comment')">SUBMIT COMMENT</button>
-  </div>
-
-  <div id="feedbackDiv" class="hidden">
-    <input id="feedback1" placeholder="Feedback 1">
-    <input id="feedback2" placeholder="Feedback 2">
-    <button onclick="submitData('feedback')">SUBMIT FEEDBACK</button>
-  </div>
+<div class="menu">
+  <button onclick="showMain()">MAIN</button>
+  <button id="fbBtn" class="hidden">FACEBOOK</button>
+  <button id="wifiBtn" class="hidden">WIFI</button>
+  <button onclick="showSettings()">SETTINGS</button>
 </div>
 
-<!-- MESSAGE -->
-<p id="msg"></p>
+<p id="status"></p>
+
+<!-- SETTINGS -->
+<div id="settings" class="box hidden">
+  <h3>Register to Unlock</h3>
+  <button onclick="openComment()">COMMENT</button>
+  <button onclick="openFeedback()">FEEDBACK</button>
+</div>
+
+<!-- COMMENT -->
+<div id="commentBox" class="box hidden">
+  <h3>COMMENT</h3>
+  <input id="c1" placeholder="Comment 1">
+  <input id="c2" placeholder="Comment 2">
+  <button onclick="submitData('COMMENT')">SUBMIT</button>
+</div>
+
+<!-- FEEDBACK -->
+<div id="feedbackBox" class="box hidden">
+  <h3>FEEDBACK</h3>
+  <input id="f1" placeholder="Feedback 1">
+  <textarea id="f2" placeholder="Feedback 2"></textarea>
+  <button onclick="submitData('FEEDBACK')">SUBMIT</button>
+</div>
 
 <script>
-const webAppUrl = "https://script.google.com/macros/s/AKfycbw1XElP7BCEPbUCKYd5llM44IoqoM7Zj-ely2jF1jGTzwny9XnrKeog9wr7yYtyAnBM/exec";
-let registered = false;
+// 🔥 PASTE YOUR WEB APP URL HERE
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzn60r8dzRjpPx-hjxwMkoI5-Hr0xtvHJbFVUwGrPcBXlCUnaInmaJVeswvsIFFTCtx/exec";
 
-// BUTTONS
-const btnFacebook = document.getElementById("btnFacebook");
-const btnWifi = document.getElementById("btnWifi");
-const settingsDiv = document.getElementById("settingsDiv");
-const commentDiv = document.getElementById("commentDiv");
-const feedbackDiv = document.getElementById("feedbackDiv");
-const msg = document.getElementById("msg");
-
-// Show settings
-document.getElementById("btnSettings").addEventListener("click", ()=>{
-  settingsDiv.classList.remove("hidden");
-  msg.textContent = "";
-});
-
-// MAIN
-document.getElementById("btnMain").addEventListener("click", ()=>{
-  msg.textContent = "Welcome to MAIN section!";
-});
-
-// FACEBOOK
-btnFacebook.addEventListener("click", ()=>{
-  if(!registered){ alert("SEND FEEDBACK / COMMENT FIRST!"); return;}
-  msg.textContent = "Facebook Flow Unlocked!";
-});
-
-// WIFI
-btnWifi.addEventListener("click", ()=>{
-  if(!registered){ alert("SEND FEEDBACK / COMMENT FIRST!"); return;}
-  msg.textContent = "WiFi Flow Unlocked!";
-});
-
-// Choose Comment or Feedback
-function choose(type){
-  commentDiv.classList.add("hidden");
-  feedbackDiv.classList.add("hidden");
-  if(type==="comment") commentDiv.classList.remove("hidden");
-  else feedbackDiv.classList.remove("hidden");
+function hideAll() {
+  settings.classList.add("hidden");
+  commentBox.classList.add("hidden");
+  feedbackBox.classList.add("hidden");
 }
 
-// Submit Data
-async function submitData(type){
+function showMain() {
+  hideAll();
+  status.innerText = "Welcome to MAIN";
+}
+
+function showSettings() {
+  hideAll();
+  settings.classList.remove("hidden");
+}
+
+function openComment() {
+  hideAll();
+  commentBox.classList.remove("hidden");
+}
+
+function openFeedback() {
+  hideAll();
+  feedbackBox.classList.remove("hidden");
+}
+
+function submitData(type) {
   let field1="", field2="";
-  if(type==="comment"){
-    field1 = document.getElementById("comment1").value;
-    field2 = document.getElementById("comment2").value;
+
+  if (type==="COMMENT") {
+    field1 = c1.value;
+    field2 = c2.value;
   } else {
-    field1 = document.getElementById("feedback1").value;
-    field2 = document.getElementById("feedback2").value;
+    field1 = f1.value;
+    field2 = f2.value;
   }
 
-  try{
-    await fetch(webAppUrl,{
-      method:"POST",
-      body: JSON.stringify({type, field1, field2})
-    });
-    registered = true;
-    btnFacebook.disabled = false;
-    btnWifi.disabled = false;
-    settingsDiv.classList.add("hidden");
-    commentDiv.classList.add("hidden");
-    feedbackDiv.classList.add("hidden");
-    msg.textContent = "Registration successful! Facebook and WiFi unlocked.";
-  }catch(e){
-    alert("Error saving data.");
-  }
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      type: type,
+      field1: field1,
+      field2: field2
+    })
+  })
+  .then(res => res.json())
+  .then(r => {
+    if (r.status==="success") {
+      status.innerText = "Registered! Facebook & WiFi Unlocked";
+      fbBtn.classList.remove("hidden");
+      wifiBtn.classList.remove("hidden");
+      hideAll();
+    } else {
+      alert("Error saving");
+    }
+  });
 }
 </script>
 
