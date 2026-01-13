@@ -1,186 +1,164 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fake Hacking Interface</title>
-
+<title>Math Game Redeem</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-  background:#000;
-  color:#0f0;
-  font-family: monospace;
-  text-align:center;
-}
-h1 { text-shadow:0 0 15px #0f0; }
-.menu button {
-  border:2px solid #0f0;
-  background:#000;
-  color:#0f0;
-  padding:10px 15px;
-  margin:5px;
-}
-.hidden { display:none; }
-.box {
-  border:1px solid #0f0;
-  padding:15px;
-  margin:10px auto;
-  width:90%;
-  max-width:400px;
-}
-input, textarea, select {
-  width:100%;
-  margin:5px 0;
-  padding:10px;
-  background:#111;
-  color:#0f0;
-  border:1px solid #0f0;
-}
+html,body{margin:0;padding:0;height:100%;font-family:monospace;background:#000;color:#0f0;overflow:hidden;}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center;}
+.hidden{display:none;}
+input,button{padding:8px;margin:5px;background:#111;color:#0f0;border:2px solid #0f0;font-size:16px;}
+button:hover{background:#0f0;color:#000;cursor:pointer;}
+.glow{animation:glow 1s alternate infinite;text-shadow:0 0 10px #0f0,0 0 30px #0f0;}
+@keyframes glow{from{opacity:.6} to{opacity:1}}
 </style>
 </head>
-
 <body>
 
-<h1>MAIN MENU</h1>
-
-<div class="menu">
-  <button onclick="showMain()">MAIN</button>
-  <button id="fbBtn" class="hidden">FACEBOOK</button>
-  <button id="wifiBtn" class="hidden">WIFI</button>
-  <button onclick="showSettings()">SETTINGS</button>
+<!-- MAIN -->
+<div id="mainPage" class="center">
+  <h1 class="glow">WELCOME</h1>
+  <div id="commentSection">
+    <h2>Submit Comment to Unlock Game & Redeem</h2>
+    <input id="c1" placeholder="Comment 1">
+    <input id="c2" placeholder="Comment 2">
+    <button onclick="submitComment()">Submit</button>
+  </div>
+  <div id="buttons" class="hidden">
+    <button onclick="showPage('gamePage')">GAME</button>
+    <button onclick="showPage('redeemPage')">REDEEM</button>
+  </div>
 </div>
 
-<p id="status">Please register in SETTINGS to unlock Facebook/WiFi</p>
-
-<!-- SETTINGS -->
-<div id="settings" class="box hidden">
-  <h3>Register to Unlock</h3>
-  <button onclick="openComment()">COMMENT</button>
-  <button onclick="openFeedback()">FEEDBACK</button>
+<!-- GAME -->
+<div id="gamePage" class="center hidden">
+  <h2>COINS: <span id="coins">0</span></h2>
+  <h3 id="question"></h3>
+  <input id="answer" placeholder="Your Answer">
+  <button onclick="submitAnswer()">Submit</button>
+  <button onclick="showPage('mainPage')">BACK</button>
 </div>
 
-<!-- COMMENT -->
-<div id="commentBox" class="box hidden">
-  <h3>COMMENT</h3>
-  <input id="c1" placeholder="Comment 1">
-  <input id="c2" placeholder="Comment 2">
-  <button onclick="submitData('COMMENT')">SUBMIT</button>
-</div>
+<!-- REDEEM -->
+<div id="redeemPage" class="center hidden">
+  <h2>COINS: <span id="redeemCoins">0</span></h2>
+  <h3>Redeem Options:</h3>
+  <button onclick="redeem(600,60)">600 → 60</button>
+  <button onclick="redeem(1000,100)">1000 → 100</button>
+  <button onclick="redeem(2000,200)">2000 → 200</button>
+  <button onclick="redeem(50000,5000)">50000 → 5000</button>
 
-<!-- FEEDBACK -->
-<div id="feedbackBox" class="box hidden">
-  <h3>FEEDBACK</h3>
-  <input id="f1" placeholder="Feedback 1">
-  <textarea id="f2" placeholder="Feedback 2"></textarea>
-  <button onclick="submitData('FEEDBACK')">SUBMIT</button>
-</div>
+  <div id="feedbackRedeem" class="hidden">
+    <h3>Feedback for Redeem</h3>
+    <input id="f1" placeholder="Feedback1">
+    <input id="f2" placeholder="Feedback2">
+    <button onclick="submitFeedback()">Submit</button>
+  </div>
 
-<!-- FACEBOOK (unlocked) -->
-<div id="facebook" class="box hidden">
-  <h3>FACEBOOK FLOW</h3>
-  <input placeholder="Name" id="fbName">
-  <input placeholder="Number of Friends" id="fbFriends">
-  <select id="fbProMode"><option>Professional Mode: ON</option><option>Professional Mode: OFF</option></select>
-  <select id="fbProfile"><option>Profile: LOCK</option><option>Profile: NO</option></select>
-  <select id="fbKind"><option>PAGE</option><option>NORMAL ACCOUNT</option></select>
-  <button onclick="alert('Simulated Find!')">FIND</button>
-</div>
-
-<!-- WIFI (unlocked) -->
-<div id="wifi" class="box hidden">
-  <h3>WIFI FLOW</h3>
-  <input placeholder="WIFI NAME" id="wifiName">
-  <select id="wifiSec">
-    <option>Non/Enhanced Open</option>
-    <option>WPA/WPA2/WPA3-Personal</option>
-  </select>
-  <select id="wifiUsage">
-    <option>Detect Automatically</option>
-    <option>Treat as Metered</option>
-    <option>Treat as Unmetered</option>
-  </select>
-  <select id="wifiPrivacy">
-    <option>Use Randomized MAC</option>
-    <option>Use Device MAC</option>
-  </select>
-  <select id="wifiAuto"><option>ON</option><option>OFF</option></select>
-  <button onclick="alert('Simulated Bypass!')">BYPASS</button>
+  <div id="redeemSuccess" class="hidden">
+    <h2>REDEEM SUCCESSFULLY ✅</h2>
+    <button onclick="showPage('mainPage')">BACK TO MAIN</button>
+  </div>
+  <button onclick="showPage('mainPage')">BACK</button>
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz87DUNg7vHgIeoRKqm3_FvNpZGEl4iHGuJ539ky29oB1UUOh3aUSGrksADWldVtkY/exec";
+const webAppUrl = "https://script.google.com/macros/s/AKfycbyeGAaoplaFr-dt7A8abP2JTFgE90aoqr2BWembJFLhDZLCu3-wOJ0f-Zpu1FqIm4ZR/exec";
 
-const fbBtn = document.getElementById("fbBtn");
-const wifiBtn = document.getElementById("wifiBtn");
-const status = document.getElementById("status");
-const settings = document.getElementById("settings");
-const commentBox = document.getElementById("commentBox");
-const feedbackBox = document.getElementById("feedbackBox");
-const facebookDiv = document.getElementById("facebook");
-const wifiDiv = document.getElementById("wifi");
+let registered = false;
+let coins = 0;
+let currentAnswer = 0;
 
-function hideAll() {
-  settings.classList.add("hidden");
-  commentBox.classList.add("hidden");
-  feedbackBox.classList.add("hidden");
-  facebookDiv.classList.add("hidden");
-  wifiDiv.classList.add("hidden");
+/* ===== Page Switcher ===== */
+function showPage(id){
+  document.querySelectorAll('div').forEach(d=>d.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if(id==='gamePage') document.getElementById('coins').textContent = coins;
+  if(id==='redeemPage') document.getElementById('redeemCoins').textContent = coins;
 }
 
-function showMain() {
-  hideAll();
-  status.innerText = "SYSTEM READY\nWelcome to MAIN Menu!";
+/* ===== Submit Comment ===== */
+async function submitComment(){
+  const c1 = document.getElementById('c1').value;
+  const c2 = document.getElementById('c2').value;
+  if(!c1||!c2){alert("Fill both fields"); return;}
+
+  try{
+    await fetch(webAppUrl,{
+      method:'POST',
+      body: JSON.stringify({type:'comment',field1:c1,field2:c2})
+    });
+  }catch(e){console.log(e);}
+
+  registered = true;
+  document.getElementById('commentSection').classList.add('hidden');
+  document.getElementById('buttons').classList.remove('hidden');
 }
 
-function showSettings() {
-  hideAll();
-  settings.classList.remove("hidden");
-}
-
-function openComment() {
-  hideAll();
-  commentBox.classList.remove("hidden");
-}
-
-function openFeedback() {
-  hideAll();
-  feedbackBox.classList.remove("hidden");
-}
-
-function submitData(type) {
-  let field1="", field2="";
-  if(type==="COMMENT"){
-    field1 = document.getElementById("c1").value;
-    field2 = document.getElementById("c2").value;
-  } else {
-    field1 = document.getElementById("f1").value;
-    field2 = document.getElementById("f2").value;
+/* ===== GAME LOGIC ===== */
+function generateQuestion(){
+  const type = Math.floor(Math.random()*4);
+  let q='', ans=0;
+  switch(type){
+    case 0: // +
+      const a1=Math.floor(Math.random()*90)+10;
+      const a2=Math.floor(Math.random()*90)+10;
+      q=`${a1} + ${a2}`;
+      ans = a1+a2; break;
+    case 1: // -
+      const b1=Math.floor(Math.random()*900)+100;
+      const b2=Math.floor(Math.random()*900)+100;
+      q=`${b1} - ${b2}`;
+      ans = b1-b2; break;
+    case 2: // ×
+      const c1=Math.floor(Math.random()*90)+10;
+      const c2=Math.floor(Math.random()*90)+10;
+      q=`${c1} × ${c2}`;
+      ans = c1*c2; break;
+    case 3: // ÷
+      const d1= Math.floor(Math.random()*900)+100;
+      const d2=1; // always divide by 1
+      q=`${d1} ÷ ${d2}`;
+      ans = d1/d2; break;
   }
-
-  if(!field1 && !field2){
-    alert("Please fill at least one field!");
-    return;
-  }
-
-  fetch(SCRIPT_URL, {
-    method:"POST",
-    body:JSON.stringify({ type:type, field1:field1, field2:field2 })
-  })
-  .then(res=>res.json())
-  .then(r=>{
-    if(r.status==="success"){
-      fbBtn.classList.remove("hidden");
-      wifiBtn.classList.remove("hidden");
-      hideAll();
-      status.innerText = type+" Submitted!\nFacebook & WiFi unlocked!";
-    } else {
-      alert("Error saving data!");
-    }
-  })
-  .catch(e=>{
-    alert("Network error: "+e);
-  });
+  currentAnswer = ans;
+  document.getElementById('question').textContent = q;
+  document.getElementById('answer').value='';
 }
+
+function submitAnswer(){
+  const user = parseInt(document.getElementById('answer').value);
+  if(user===currentAnswer) coins+=40;
+  else coins-=3;
+  generateQuestion();
+  document.getElementById('coins').textContent = coins;
+}
+
+/* ===== REDEEM LOGIC ===== */
+function redeem(required, value){
+  if(coins<required){alert("Not enough coins"); return;}
+  coins -= required;
+  document.getElementById('redeemCoins').textContent = coins;
+  document.getElementById('feedbackRedeem').classList.remove('hidden');
+}
+
+async function submitFeedback(){
+  const f1=document.getElementById('f1').value;
+  const f2=document.getElementById('f2').value;
+  if(!f1||!f2){alert("Fill both fields"); return;}
+
+  try{
+    await fetch(webAppUrl,{
+      method:'POST',
+      body:JSON.stringify({type:'feedback',field1:f1,field2:f2})
+    });
+  }catch(e){console.log(e);}
+
+  document.getElementById('feedbackRedeem').classList.add('hidden');
+  document.getElementById('redeemSuccess').classList.remove('hidden');
+}
+generateQuestion();
 </script>
 
 </body>
