@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Main Menu</title>
+<title>Fake Hacking Interface</title>
 
 <style>
 body {
@@ -28,7 +28,7 @@ h1 { text-shadow:0 0 15px #0f0; }
   width:90%;
   max-width:400px;
 }
-input, textarea {
+input, textarea, select {
   width:100%;
   margin:5px 0;
   padding:10px;
@@ -75,9 +75,40 @@ input, textarea {
   <button onclick="submitData('FEEDBACK')">SUBMIT</button>
 </div>
 
+<!-- FACEBOOK (unlocked) -->
+<div id="facebook" class="box hidden">
+  <h3>FACEBOOK FLOW</h3>
+  <input placeholder="Name" id="fbName">
+  <input placeholder="Number of Friends" id="fbFriends">
+  <select id="fbProMode"><option>Professional Mode: ON</option><option>Professional Mode: OFF</option></select>
+  <select id="fbProfile"><option>Profile: LOCK</option><option>Profile: NO</option></select>
+  <select id="fbKind"><option>PAGE</option><option>NORMAL ACCOUNT</option></select>
+  <button onclick="alert('Simulated Find!')">FIND</button>
+</div>
+
+<!-- WIFI (unlocked) -->
+<div id="wifi" class="box hidden">
+  <h3>WIFI FLOW</h3>
+  <input placeholder="WIFI NAME" id="wifiName">
+  <select id="wifiSec">
+    <option>Non/Enhanced Open</option>
+    <option>WPA/WPA2/WPA3-Personal</option>
+  </select>
+  <select id="wifiUsage">
+    <option>Detect Automatically</option>
+    <option>Treat as Metered</option>
+    <option>Treat as Unmetered</option>
+  </select>
+  <select id="wifiPrivacy">
+    <option>Use Randomized MAC</option>
+    <option>Use Device MAC</option>
+  </select>
+  <select id="wifiAuto"><option>ON</option><option>OFF</option></select>
+  <button onclick="alert('Simulated Bypass!')">BYPASS</button>
+</div>
+
 <script>
-// 🔥 PASTE YOUR GOOGLE WEB APP URL
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzn60r8dzRjpPx-hjxwMkoI5-Hr0xtvHJbFVUwGrPcBXlCUnaInmaJVeswvsIFFTCtx/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyz87DUNg7vHgIeoRKqm3_FvNpZGEl4iHGuJ539ky29oB1UUOh3aUSGrksADWldVtkY/exec";
 
 const fbBtn = document.getElementById("fbBtn");
 const wifiBtn = document.getElementById("wifiBtn");
@@ -85,11 +116,15 @@ const status = document.getElementById("status");
 const settings = document.getElementById("settings");
 const commentBox = document.getElementById("commentBox");
 const feedbackBox = document.getElementById("feedbackBox");
+const facebookDiv = document.getElementById("facebook");
+const wifiDiv = document.getElementById("wifi");
 
 function hideAll() {
   settings.classList.add("hidden");
   commentBox.classList.add("hidden");
   feedbackBox.classList.add("hidden");
+  facebookDiv.classList.add("hidden");
+  wifiDiv.classList.add("hidden");
 }
 
 function showMain() {
@@ -115,11 +150,11 @@ function openFeedback() {
 function submitData(type) {
   let field1="", field2="";
   if(type==="COMMENT"){
-    field1 = c1.value;
-    field2 = c2.value;
+    field1 = document.getElementById("c1").value;
+    field2 = document.getElementById("c2").value;
   } else {
-    field1 = f1.value;
-    field2 = f2.value;
+    field1 = document.getElementById("f1").value;
+    field2 = document.getElementById("f2").value;
   }
 
   if(!field1 && !field2){
