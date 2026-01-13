@@ -2,37 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Math Game Redeem</title>
+<title>Fun Game Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-html,body{margin:0;padding:0;height:100%;font-family:monospace;background:#111;color:#0f0;overflow:hidden;}
+html,body{margin:0;padding:0;height:100%;font-family:sans-serif;overflow:hidden;background:#1a1a2e;color:#fff;}
 body{display:flex;flex-direction:column;}
-.topbar{display:flex;justify-content:space-around;background:#000;padding:10px;position:sticky;top:0;z-index:100;}
-.topbar button{background:#111;color:#0f0;border:2px solid #0f0;padding:8px 12px;font-size:16px;cursor:pointer;}
+.topbar{display:flex;justify-content:space-around;align-items:center;background:#162447;padding:10px;position:sticky;top:0;z-index:100;}
+.topbar button{background:#1f4068;color:#fff;border:2px solid #fff;padding:8px 12px;font-size:16px;cursor:pointer;border-radius:6px;}
 .topbar button:disabled{opacity:0.3;cursor:default;}
-.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 50px);text-align:center;}
+.topbar span{font-weight:bold;}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:calc(100vh - 50px);text-align:center;padding:20px;transition:all 0.5s;}
 .hidden{display:none;}
-input,button{padding:8px;margin:5px;background:#111;color:#0f0;border:2px solid #0f0;font-size:16px;}
-button:hover:not(:disabled){background:#0f0;color:#000;}
-.glow{animation:glow 1s alternate infinite;text-shadow:0 0 10px #0f0,0 0 30px #0f0;}
+input,button,select{padding:8px;margin:5px;background:#0f3460;color:#fff;border:2px solid #fff;font-size:16px;border-radius:6px;}
+button:hover:not(:disabled){background:#e94560;color:#fff;transition:0.3s;}
+.glow{animation:glow 1s alternate infinite;text-shadow:0 0 10px #fff,0 0 20px #fff;}
 @keyframes glow{from{opacity:.6} to{opacity:1}}
+/* Background particles */
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;}
 </style>
 </head>
 <body>
 
+<canvas id="bgCanvas"></canvas>
+
 <!-- TOPBAR -->
 <div class="topbar">
   <button id="btnMain" onclick="showPage('mainPage')">Main</button>
-  <button id="btnGame" onclick="showPage('gamePage')" disabled>Game</button>
+  <select id="gameSelector" onchange="selectGame()" disabled>
+    <option value="">Select Game</option>
+    <option value="math">Math Game</option>
+    <option value="guess">Guess Number</option>
+  </select>
   <button id="btnRedeem" onclick="showPage('redeemPage')" disabled>Redeem</button>
   <span>COINS: <span id="coinsCounter">0</span></span>
 </div>
 
 <!-- MAIN -->
 <div id="mainPage" class="center">
-  <h1 class="glow">WELCOME</h1>
+  <h1 class="glow">WELCOME TO GAME PORTAL</h1>
   <div id="commentSection">
-    <h2>Submit Comment to Unlock Game & Redeem</h2>
+    <h3>Submit Comment to Unlock Games & Redeem</h3>
     <input id="c1" placeholder="Comment 1">
     <input id="c2" placeholder="Comment 2">
     <button onclick="submitComment()">Submit</button>
@@ -41,9 +50,12 @@ button:hover:not(:disabled){background:#0f0;color:#000;}
 
 <!-- GAME -->
 <div id="gamePage" class="center hidden">
-  <h2 id="question"></h2>
-  <input id="answer" placeholder="Your Answer">
-  <button onclick="submitAnswer()">Submit</button>
+  <h2 id="gameTitle"></h2>
+  <div id="gameArea">
+    <h3 id="question"></h3>
+    <input id="answer" placeholder="Your Answer">
+    <button onclick="submitAnswer()">Submit</button>
+  </div>
   <button onclick="showPage('mainPage')">Back</button>
 </div>
 
@@ -70,10 +82,11 @@ button:hover:not(:disabled){background:#0f0;color:#000;}
 </div>
 
 <script>
-const webAppUrl = "https://script.google.com/macros/s/AKfycbwbgXlhCkMZ4x5I43qqcbOIOA-pegFs1Uxu5q1dGz737_yZMa4zcfa4S7IQsE4QTRU/exec"; // ilisi sa imo Web App URL
+const webAppUrl="https://script.google.com/macros/s/AKfycbwbgXlhCkMZ4x5I43qqcbOIOA-pegFs1Uxu5q1dGz737_yZMa4zcfa4S7IQsE4QTRU/exec";
 let registered=false;
 let coins=0;
 let currentAnswer=0;
+let currentGame="";
 
 /* ===== Page Switch ===== */
 function showPage(id){
@@ -93,31 +106,31 @@ async function submitComment(){
   }catch(e){console.log(e);}
 
   registered=true;
-  document.getElementById('btnGame').disabled=false;
+  document.getElementById('gameSelector').disabled=false;
   document.getElementById('btnRedeem').disabled=false;
   showPage('mainPage');
 }
 
-/* ===== GAME LOGIC ===== */
-function generateQuestion(){
+/* ===== Game Selection ===== */
+function selectGame(){
+  currentGame=document.getElementById('gameSelector').value;
+  if(currentGame){
+    document.getElementById('gameTitle').textContent=currentGame==="math"?"Math Game":"Guess the Number";
+    showPage('gamePage');
+    if(currentGame==="math") generateMathQuestion();
+    else generateGuessNumber();
+  }
+}
+
+/* ===== Math Game ===== */
+function generateMathQuestion(){
   const type=Math.floor(Math.random()*4);
   let q='',ans=0;
   switch(type){
-    case 0:
-      const a1=Math.floor(Math.random()*90)+10;
-      const a2=Math.floor(Math.random()*90)+10;
-      q=`${a1} + ${a2}`; ans=a1+a2; break;
-    case 1:
-      const b1=Math.floor(Math.random()*900)+100;
-      const b2=Math.floor(Math.random()*900)+100;
-      q=`${b1} - ${b2}`; ans=b1-b2; break;
-    case 2:
-      const c1=Math.floor(Math.random()*90)+10;
-      const c2=Math.floor(Math.random()*90)+10;
-      q=`${c1} × ${c2}`; ans=c1*c2; break;
-    case 3:
-      const d1=Math.floor(Math.random()*900)+100;
-      q=`${d1} ÷ 1`; ans=d1; break;
+    case 0: const a1=Math.floor(Math.random()*90)+10; const a2=Math.floor(Math.random()*90)+10; q=`${a1} + ${a2}`; ans=a1+a2; break;
+    case 1: const b1=Math.floor(Math.random()*900)+100; const b2=Math.floor(Math.random()*900)+100; q=`${b1} - ${b2}`; ans=b1-b2; break;
+    case 2: const c1=Math.floor(Math.random()*90)+10; const c2=Math.floor(Math.random()*90)+10; q=`${c1} × ${c2}`; ans=c1*c2; break;
+    case 3: const d1=Math.floor(Math.random()*900)+100; q=`${d1} ÷ 1`; ans=d1; break;
   }
   currentAnswer=ans;
   document.getElementById('question').textContent=q;
@@ -128,7 +141,15 @@ function submitAnswer(){
   const user=parseInt(document.getElementById('answer').value);
   if(user===currentAnswer) coins+=40; else coins-=3;
   document.getElementById('coinsCounter').textContent=coins;
-  generateQuestion();
+  if(currentGame==="math") generateMathQuestion();
+  else generateGuessNumber();
+}
+
+/* ===== Guess Number Game ===== */
+function generateGuessNumber(){
+  currentAnswer=Math.floor(Math.random()*100)+1;
+  document.getElementById('question').textContent="Guess a number between 1-100";
+  document.getElementById('answer').value='';
 }
 
 /* ===== REDEEM ===== */
@@ -152,7 +173,30 @@ async function submitFeedback(){
   document.getElementById('redeemSuccess').classList.remove('hidden');
 }
 
-generateQuestion();
+/* ===== Background Particles ===== */
+const canvas=document.getElementById('bgCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let particles=[];
+for(let i=0;i<100;i++){
+  particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*3+1,speed:Math.random()*1+0.2}));
+}
+function animateParticles(){
+  ctx.fillStyle='rgba(26,26,46,0.3)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle='#e94560';
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+    p.y-=p.speed;
+    if(p.y<0)p.y=canvas.height;
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
 </script>
 
 </body>
