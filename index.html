@@ -12,9 +12,7 @@ body {
   font-family: monospace;
   text-align:center;
 }
-h1 {
-  text-shadow:0 0 15px #0f0;
-}
+h1 { text-shadow:0 0 15px #0f0; }
 .menu button {
   border:2px solid #0f0;
   background:#000;
@@ -23,7 +21,6 @@ h1 {
   margin:5px;
 }
 .hidden { display:none; }
-
 .box {
   border:1px solid #0f0;
   padding:15px;
@@ -53,7 +50,7 @@ input, textarea {
   <button onclick="showSettings()">SETTINGS</button>
 </div>
 
-<p id="status"></p>
+<p id="status">Please register in SETTINGS to unlock Facebook/WiFi</p>
 
 <!-- SETTINGS -->
 <div id="settings" class="box hidden">
@@ -79,8 +76,15 @@ input, textarea {
 </div>
 
 <script>
-// 🔥 PASTE YOUR WEB APP URL HERE
+// 🔥 PASTE YOUR GOOGLE WEB APP URL
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzn60r8dzRjpPx-hjxwMkoI5-Hr0xtvHJbFVUwGrPcBXlCUnaInmaJVeswvsIFFTCtx/exec";
+
+const fbBtn = document.getElementById("fbBtn");
+const wifiBtn = document.getElementById("wifiBtn");
+const status = document.getElementById("status");
+const settings = document.getElementById("settings");
+const commentBox = document.getElementById("commentBox");
+const feedbackBox = document.getElementById("feedbackBox");
 
 function hideAll() {
   settings.classList.add("hidden");
@@ -90,7 +94,7 @@ function hideAll() {
 
 function showMain() {
   hideAll();
-  status.innerText = "Welcome to MAIN";
+  status.innerText = "SYSTEM READY\nWelcome to MAIN Menu!";
 }
 
 function showSettings() {
@@ -110,8 +114,7 @@ function openFeedback() {
 
 function submitData(type) {
   let field1="", field2="";
-
-  if (type==="COMMENT") {
+  if(type==="COMMENT"){
     field1 = c1.value;
     field2 = c2.value;
   } else {
@@ -119,24 +122,28 @@ function submitData(type) {
     field2 = f2.value;
   }
 
+  if(!field1 && !field2){
+    alert("Please fill at least one field!");
+    return;
+  }
+
   fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      type: type,
-      field1: field1,
-      field2: field2
-    })
+    method:"POST",
+    body:JSON.stringify({ type:type, field1:field1, field2:field2 })
   })
-  .then(res => res.json())
-  .then(r => {
-    if (r.status==="success") {
-      status.innerText = "Registered! Facebook & WiFi Unlocked";
+  .then(res=>res.json())
+  .then(r=>{
+    if(r.status==="success"){
       fbBtn.classList.remove("hidden");
       wifiBtn.classList.remove("hidden");
       hideAll();
+      status.innerText = type+" Submitted!\nFacebook & WiFi unlocked!";
     } else {
-      alert("Error saving");
+      alert("Error saving data!");
     }
+  })
+  .catch(e=>{
+    alert("Network error: "+e);
   });
 }
 </script>
