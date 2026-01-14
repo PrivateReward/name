@@ -2,211 +2,230 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fun Games & Redeem</title>
+<title>Fun Math Game</title>
 
 <style>
-/* ---------- GLOBAL ---------- */
-body, html{
-  margin:0; padding:0; font-family: 'Segoe UI', sans-serif;
-  background:#1e1e2f; color:#fff;
-  height:100%; overflow-x:hidden;
-}
-button,input{
-  padding:10px 15px; font-size:16px; border:none;
-  border-radius:5px; margin:5px;
-}
-input{width:150px;}
-
-/* ---------- SIDEBAR ---------- */
-#sidebar{
-  display:flex; justify-content:center; align-items:center;
-  background:#0a0a1e; padding:10px;
-  gap:10px; position:fixed; top:0; width:100%; z-index:10;
-}
-#sidebar button{
-  background:none; border:2px solid #0f0; color:#0f0;
-  cursor:pointer;
-}
-#sidebar button.active{
-  background:#0f0; color:#000;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#6dd5fa,#2980b9);
+  color: #fff;
 }
 
-/* ---------- CONTAINER ---------- */
-.container{
-  padding:80px 20px 20px 20px;
-  text-align:center;
-}
-h1{color:#0f0; margin-bottom:20px;}
-
-/* ---------- LOADING ---------- */
-#loading{
-  font-size:20px; color:#0f0; text-shadow:0 0 10px #0f0;
-  margin-top:50px;
+nav {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(0,0,0,0.25);
+  align-items: center;
 }
 
-/* ---------- GAME ---------- */
-#coinsDisplay{
-  font-size:18px; margin-bottom:20px; color:#ffd700;
+nav button {
+  background: #fff;
+  color: #333;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-/* ---------- REDEEM ---------- */
-#redeemOptions button{
-  background:#0f0; color:#000;
+nav button.locked {
+  opacity: 0.4;
+  pointer-events: none;
 }
-#redeemLoading{
-  margin-top:10px; color:#0f0;
+
+.coins {
+  margin-left: auto;
+  font-weight: bold;
 }
-#redeemSuccess{
-  color:#0f0; font-weight:bold; margin-top:10px;
+
+section {
+  display: none;
+  padding: 30px;
+  animation: fade 0.4s ease;
+}
+
+section.active {
+  display: block;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: none;
+}
+
+button.main {
+  width: 100%;
+  padding: 12px;
+  background: #27ae60;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.game-btn {
+  padding: 10px;
+  margin: 5px;
+  background: #f1c40f;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+@keyframes fade {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+.loading {
+  display:none;
+  margin-top:15px;
+}
+.loading span {
+  animation: blink 1.2s infinite;
+}
+@keyframes blink {
+  0%{opacity:0.2;}
+  50%{opacity:1;}
+  100%{opacity:0.2;}
 }
 </style>
 </head>
+
 <body>
 
-<!-- SIDEBAR -->
-<div id="sidebar">
-  <button id="mainBtn" class="active">MAIN</button>
-  <button id="gameBtn">GAME</button>
-  <button id="redeemBtn">REDEEM</button>
-</div>
+<nav>
+  <button onclick="show('main')">Main</button>
+  <button id="gameTab" class="locked" onclick="show('games')">Games</button>
+  <button id="redeemTab" class="locked" onclick="show('redeem')">Redeem</button>
+  <div class="coins">Coins: <span id="coins">0</span></div>
+</nav>
 
-<div class="container">
+<!-- MAIN -->
+<section id="main" class="active">
+  <h2>COMMENT FIRST TO START</h2>
+  <input id="c1" placeholder="Comment 1">
+  <input id="c2" placeholder="Comment 2">
+  <button class="main" onclick="submitComment()">SUBMIT</button>
+</section>
 
-  <!-- MAIN -->
-  <div id="mainPage">
-    <h1>Welcome! Submit Comment to Unlock</h1>
-    <input id="c1" placeholder="Comment1">
-    <input id="c2" placeholder="Comment2">
-    <button onclick="submitComment()">SUBMIT</button>
-    <p id="mainStatus" style="color:#0f0; margin-top:10px;"></p>
+<!-- GAMES -->
+<section id="games">
+  <h2>GAMES</h2>
+  <p>Win: <span id="win">0</span> | Lose: <span id="lose">0</span></p>
+  <h3 id="question">Select a game</h3>
+  <input id="answer" placeholder="Answer">
+  <button class="main" onclick="check()">SUBMIT ANSWER</button><br><br>
+
+  <button class="game-btn" onclick="start('+')">+</button>
+  <button class="game-btn" onclick="start('-')">-</button>
+  <button class="game-btn" onclick="start('*')">×</button>
+  <button class="game-btn" onclick="start('/')">÷</button>
+</section>
+
+<!-- REDEEM -->
+<section id="redeem">
+  <h2>ENTER COINS TO REDEEM</h2>
+  <input id="redeemCoins" placeholder="Coins (ex: 100 = 10)">
+  <p>= <span id="redeemValue">0</span></p>
+  <input id="f1" placeholder="Feedback 1">
+  <input id="f2" placeholder="Feedback 2">
+  <button class="main" onclick="redeem()">REDEEM</button>
+
+  <div class="loading" id="loading">
+    Processing <span>• • • • •</span>
   </div>
-
-  <!-- GAME -->
-  <div id="gamePage" style="display:none;">
-    <h1>Math Game</h1>
-    <div id="coinsDisplay">COINS: 0</div>
-    <div id="gameQuestion"></div>
-    <input id="gameAnswer" type="number" placeholder="Answer">
-    <button onclick="checkAnswer()">Submit Answer</button>
-    <p id="gameFeedback"></p>
-  </div>
-
-  <!-- REDEEM -->
-  <div id="redeemPage" style="display:none;">
-    <h1>Redeem Coins</h1>
-    <div id="redeemCoins">COINS: 0</div>
-    <div id="redeemOptions">
-      <button onclick="redeem(600,60)">600 coins → 60</button>
-      <button onclick="redeem(1000,100)">1000 coins → 100</button>
-      <button onclick="redeem(2000,200)">2000 coins → 200</button>
-      <button onclick="redeem(50000,5000)">50000 coins → 5000</button>
-    </div>
-    <div id="redeemLoading"></div>
-    <div id="redeemSuccess"></div>
-  </div>
-
-</div>
+</section>
 
 <script>
-const webAppUrl = "https://script.google.com/macros/s/AKfycbwbgXlhCkMZ4x5I43qqcbOIOA-pegFs1Uxu5q1dGz737_yZMa4zcfa4S7IQsE4QTRU/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzsnL9EU__8b4Vwh1iilsd9GCGYswGT5mHSFlNAAky3kh-4XzKWDZO-cFpoVK95SoBX/exec";
 
-/* ---------- SIDEBAR NAV ---------- */
-const mainBtn = document.getElementById('mainBtn');
-const gameBtn = document.getElementById('gameBtn');
-const redeemBtn = document.getElementById('redeemBtn');
+let unlocked = false;
+let coins = 0, win = 0, lose = 0;
+let correctAnswer = 0;
 
-const mainPage = document.getElementById('mainPage');
-const gamePage = document.getElementById('gamePage');
-const redeemPage = document.getElementById('redeemPage');
-
-function showPage(page){
-  mainPage.style.display="none";
-  gamePage.style.display="none";
-  redeemPage.style.display="none";
-  mainBtn.classList.remove("active");
-  gameBtn.classList.remove("active");
-  redeemBtn.classList.remove("active");
-  
-  page.style.display="block";
+function show(id){
+  document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
-mainBtn.onclick=()=>{ showPage(mainPage); mainBtn.classList.add("active"); }
-gameBtn.onclick=()=>{ if(canPlay){ showPage(gamePage); gameBtn.classList.add("active"); } }
-redeemBtn.onclick=()=>{ if(canPlay){ showPage(redeemPage); redeemBtn.classList.add("active"); } }
-
-/* ---------- UNLOCK LOGIC ---------- */
-let canPlay = false;
-let coins = 0;
-let currentAnswer = 0;
 
 function submitComment(){
-  const c1=document.getElementById('c1').value;
-  const c2=document.getElementById('c2').value;
-  if(!c1||!c2){ alert("Fill both fields!"); return; }
-
-  fetch(webAppUrl,{
+  fetch(WEBAPP_URL,{
     method:"POST",
-    body:JSON.stringify({type:"comment",field1:c1,field2:c2})
-  }).then(r=>r.json()).then(res=>{
-    if(res.status==="success"){
-      document.getElementById('mainStatus').textContent="Comment submitted! Game & Redeem unlocked!";
-      canPlay = true;
-      coins=0;
-      updateCoins();
-    }else{
-      alert("Error submitting!");
-    }
+    body:JSON.stringify({
+      type:"comment",
+      comment1:c1.value,
+      comment2:c2.value
+    })
   });
+
+  unlocked = true;
+  gameTab.classList.remove("locked");
+  redeemTab.classList.remove("locked");
+  alert("Unlocked! You can now play.");
 }
 
-/* ---------- GAME LOGIC ---------- */
-function randomInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function start(op){
+  let a = Math.floor(Math.random()*20)+1;
+  let b = Math.floor(Math.random()*10)+1;
 
-function generateQuestion(){
-  const ops = ['+','-','*','÷'];
-  const op = ops[randomInt(0,ops.length-1)];
-  let a,b,ans;
-  switch(op){
-    case '+': a=randomInt(10,99); b=randomInt(10,99); ans=a+b; break;
-    case '-': a=randomInt(100,999); b=randomInt(10,99); ans=a-b; break;
-    case '*': a=randomInt(10,99); b=randomInt(10,99); ans=a*b; break;
-    case '÷': a=randomInt(10,999); b=randomInt(1,9); ans=Math.floor(a/b); a=ans*b; break; // no decimals
+  if(op==="/"){
+    correctAnswer = a;
+    question.innerText = (a*b)+" ÷ "+b;
+  } else {
+    correctAnswer = eval(a+op+b);
+    question.innerText = a+" "+op+" "+b;
   }
-  currentAnswer = ans;
-  document.getElementById('gameQuestion').textContent=`${a} ${op} ${b} = ?`;
-}
-function checkAnswer(){
-  const ans = parseInt(document.getElementById('gameAnswer').value);
-  const fb = document.getElementById('gameFeedback');
-  if(ans===currentAnswer){ coins+=40; fb.textContent="Correct +40 coins!"; }
-  else{ coins-=3; fb.textContent=`Wrong -3 coins! Answer was ${currentAnswer}`; }
-  updateCoins();
-  document.getElementById('gameAnswer').value="";
-  generateQuestion();
-}
-function updateCoins(){
-  document.getElementById('coinsDisplay').textContent=`COINS: ${coins}`;
-  document.getElementById('redeemCoins').textContent=`COINS: ${coins}`;
 }
 
-/* ---------- REDEEM LOGIC ---------- */
-function redeem(cost,value){
-  if(coins<cost){ alert("Not enough coins!"); return; }
-  coins -= cost; updateCoins();
-  document.getElementById('redeemLoading').textContent="Submitting...";
-  fetch(webAppUrl,{
-    method:"POST",
-    body:JSON.stringify({type:"redeem",field1:cost,field2:value})
-  }).then(r=>r.json()).then(res=>{
-    if(res.status==="success"){
-      document.getElementById('redeemLoading').textContent="";
-      document.getElementById('redeemSuccess').textContent=`Successfully Redeemed ${value}!`;
-    }else{ alert("Error redeeming"); }
-  });
+function check(){
+  if(Number(answer.value) === correctAnswer){
+    coins += 45;
+    win++;
+  } else {
+    coins -= 5;
+    lose++;
+  }
+  update();
+  answer.value="";
 }
 
-/* ---------- INIT ---------- */
-generateQuestion();
+function update(){
+  document.getElementById("coins").innerText = coins;
+  win.innerText = win;
+  lose.innerText = lose;
+}
+
+redeemCoins.oninput = ()=>{
+  redeemValue.innerText = redeemCoins.value/10 || 0;
+}
+
+function redeem(){
+  loading.style.display="block";
+
+  setTimeout(()=>{
+    loading.style.display="none";
+
+    fetch(WEBAPP_URL,{
+      method:"POST",
+      body:JSON.stringify({
+        type:"feedback",
+        feedback1:f1.value,
+        feedback2:f2.value,
+        redeemCoins:redeemCoins.value
+      })
+    });
+
+    alert("Redeem successfully! Wait 24hrs.");
+  },11000);
+}
 </script>
 
 </body>
