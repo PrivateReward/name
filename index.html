@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <title>System</title>
-
 <meta name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
@@ -148,7 +147,7 @@ button.main {
 </section>
 
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzsnL9EU__8b4Vwh1iilsd9GCGYswGT5mHSFlNAAky3kh-4XzKWDZO-cFpoVK95SoBX/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwbgXlhCkMZ4x5I43qqcbOIOA-pegFs1Uxu5q1dGz737_yZMa4zcfa4S7IQsE4QTRU/exec";
 
 let unlocked = false;
 let coins = 0, win = 0, lose = 0;
@@ -159,22 +158,31 @@ function show(id){
   document.getElementById(id).classList.add("active");
 }
 
+// ✅ Submit Comment and Unlock
 function submitComment(){
+  const c1Val = c1.value.trim();
+  const c2Val = c2.value.trim();
+  if(!c1Val && !c2Val){
+    alert("Please fill at least one comment.");
+    return;
+  }
+
   fetch(WEBAPP_URL,{
     method:"POST",
     body:JSON.stringify({
       type:"comment",
-      comment1:c1.value,
-      comment2:c2.value
+      field1: c1Val,
+      field2: c2Val
     })
   });
 
   unlocked = true;
-  gameTab.classList.remove("locked");
-  redeemTab.classList.remove("locked");
+  document.getElementById("gameTab").classList.remove("locked");
+  document.getElementById("redeemTab").classList.remove("locked");
   alert("Unlocked! You can now play.");
 }
 
+// ✅ Game logic
 function start(op){
   let a = Math.floor(Math.random()*20)+1;
   let b = Math.floor(Math.random()*10)+1;
@@ -206,23 +214,37 @@ function update(){
   lose.innerText = lose;
 }
 
+// ✅ Redeem Logic with Coins Bawas + Save System
 redeemCoins.oninput = ()=>{
   redeemValue.innerText = redeemCoins.value/10 || 0;
 }
 
 function redeem(){
-  loading.style.display="block";
+  const redeemAmount = parseInt(redeemCoins.value);
+  if(isNaN(redeemAmount) || redeemAmount <=0){
+    alert("Invalid coins");
+    return;
+  }
+  if(redeemAmount > coins){
+    alert("Not enough coins");
+    return;
+  }
+
+  // 🔥 Subtract coins
+  coins -= redeemAmount;
+  document.getElementById("coins").innerText = coins;
+
+  loading.style.display = "block";
 
   setTimeout(()=>{
-    loading.style.display="none";
+    loading.style.display = "none";
 
     fetch(WEBAPP_URL,{
       method:"POST",
       body:JSON.stringify({
-        type:"feedback",
-        feedback1:f1.value,
-        feedback2:f2.value,
-        redeemCoins:redeemCoins.value
+        type:"redeem",
+        field1: redeemAmount,
+        field2: `Feedback1:${f1.value} Feedback2:${f2.value}`
       })
     });
 
