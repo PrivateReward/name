@@ -167,12 +167,13 @@ function submitComment(){
     return;
   }
 
+  // 🔹 FIXED: Changed field1/field2 to comment1/comment2
   fetch(WEBAPP_URL,{
     method:"POST",
     body:JSON.stringify({
       type:"comment",
-      field1: c1Val,
-      field2: c2Val
+      comment1: c1Val,
+      comment2: c2Val
     })
   });
 
@@ -254,4 +255,4 @@ function redeem(){
 </script>
 
 </body>
-</html>
+      </html>
