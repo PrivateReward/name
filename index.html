@@ -134,12 +134,10 @@ button.main {
 
 <!-- REDEEM -->
 <section id="redeem">
-  <h2>ENTER COINS TO REDEEM</h2>
-  <input id="redeemCoins" placeholder="Coins (ex: 100 = 10)">
-  <p>= <span id="redeemValue">0</span></p>
+  <h2>ENTER FEEDBACK TO SUBMIT</h2>
   <input id="f1" placeholder="Feedback 1">
   <input id="f2" placeholder="Feedback 2">
-  <button class="main" onclick="redeem()">REDEEM</button>
+  <button class="main" onclick="submitFeedback()">SUBMIT FEEDBACK</button>
 
   <div class="loading" id="loading">
     Processing <span>• • • • •</span>
@@ -147,7 +145,7 @@ button.main {
 </section>
 
 <script>
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyAUntF0ZVLH2yEgR4ZViEvCi3pdFDKSAiJGabMVlO6mBLPd5a68IqO96ypY2pII2yA/exec";
+const WEBAPP_URL = "YOUR_WEBAPP_URL_HERE";
 
 let unlocked = false;
 let coins = 0, win = 0, lose = 0;
@@ -167,7 +165,6 @@ function submitComment(){
     return;
   }
 
-  // 🔹 FIXED: Changed field1/field2 to comment1/comment2
   fetch(WEBAPP_URL,{
     method:"POST",
     body:JSON.stringify({
@@ -181,9 +178,12 @@ function submitComment(){
   document.getElementById("gameTab").classList.remove("locked");
   document.getElementById("redeemTab").classList.remove("locked");
   alert("Unlocked! You can now play.");
+
+  c1.value = "";
+  c2.value = "";
 }
 
-// ✅ Game logic
+// ✅ Game logic (Coins unaffected)
 function start(op){
   let a = Math.floor(Math.random()*20)+1;
   let b = Math.floor(Math.random()*10)+1;
@@ -215,44 +215,35 @@ function update(){
   lose.innerText = lose;
 }
 
-// ✅ Redeem Logic with Coins Bawas + Save System
-redeemCoins.oninput = ()=>{
-  redeemValue.innerText = redeemCoins.value/10 || 0;
-}
-
-function redeem(){
-  const redeemAmount = parseInt(redeemCoins.value);
-  if(isNaN(redeemAmount) || redeemAmount <=0){
-    alert("Invalid coins");
-    return;
-  }
-  if(redeemAmount > coins){
-    alert("Not enough coins");
+// ✅ Submit Feedback only
+function submitFeedback(){
+  const fb1 = f1.value.trim();
+  const fb2 = f2.value.trim();
+  if(!fb1 && !fb2){
+    alert("Please fill at least one feedback.");
     return;
   }
 
-  // 🔥 Subtract coins
-  coins -= redeemAmount;
-  document.getElementById("coins").innerText = coins;
-
-  loading.style.display = "block";
+  loading.style.display="block";
 
   setTimeout(()=>{
-    loading.style.display = "none";
+    loading.style.display="none";
 
     fetch(WEBAPP_URL,{
       method:"POST",
       body:JSON.stringify({
-        type:"redeem",
-        field1: redeemAmount,
-        field2: `Feedback1:${f1.value} Feedback2:${f2.value}`
+        type:"feedback",
+        feedback1: fb1,
+        feedback2: fb2
       })
     });
 
-    alert("Redeem successfully! Wait 24hrs.");
-  },11000);
+    alert("Feedback submitted successfully!");
+    f1.value = "";
+    f2.value = "";
+  },2000); // 2 seconds for animation
 }
 </script>
 
 </body>
-      </html>
+</html>
