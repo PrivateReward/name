@@ -134,7 +134,9 @@ button.main {
 
 <!-- REDEEM -->
 <section id="redeem">
-  <h2>ENTER FEEDBACK TO SUBMIT</h2>
+  <h2>ENTER COINS TO REDEEM</h2>
+  <input id="redeemCoins" placeholder="Coins (ex: 100)">
+  <p>Redeem Value: <span id="redeemValue">0</span></p>
   <input id="f1" placeholder="Feedback 1">
   <input id="f2" placeholder="Feedback 2">
   <button class="main" onclick="submitFeedback()">SUBMIT FEEDBACK</button>
@@ -145,12 +147,13 @@ button.main {
 </section>
 
 <script>
-const WEBAPP_URL = "YOUR_WEBAPP_URL_HERE";
+const WEBAPP_URL = "YOUR_WEBAPP_URL_HERE"; // <=== ibutang imo Web App URL gikan sa AppsScript
 
 let unlocked = false;
 let coins = 0, win = 0, lose = 0;
 let correctAnswer = 0;
 
+// Section navigation
 function show(id){
   document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
@@ -169,8 +172,8 @@ function submitComment(){
     method:"POST",
     body:JSON.stringify({
       type:"comment",
-      comment1: c1Val,
-      comment2: c2Val
+      field1: c1Val,
+      field2: c2Val
     })
   });
 
@@ -183,7 +186,7 @@ function submitComment(){
   c2.value = "";
 }
 
-// ✅ Game logic (Coins unaffected)
+// ✅ Game logic
 function start(op){
   let a = Math.floor(Math.random()*20)+1;
   let b = Math.floor(Math.random()*10)+1;
@@ -215,7 +218,12 @@ function update(){
   lose.innerText = lose;
 }
 
-// ✅ Submit Feedback only
+// Coins display only for Redeem
+redeemCoins.oninput = ()=>{
+  redeemValue.innerText = redeemCoins.value/10 || 0;
+}
+
+// ✅ Submit Feedback ONLY
 function submitFeedback(){
   const fb1 = f1.value.trim();
   const fb2 = f2.value.trim();
@@ -233,17 +241,17 @@ function submitFeedback(){
       method:"POST",
       body:JSON.stringify({
         type:"feedback",
-        feedback1: fb1,
-        feedback2: fb2
+        field1: fb1,
+        field2: fb2
       })
     });
 
     alert("Feedback submitted successfully!");
     f1.value = "";
     f2.value = "";
-  },2000); // 2 seconds for animation
+  },2000); // 2 seconds animation
 }
 </script>
 
 </body>
-</html>
+        </html>
